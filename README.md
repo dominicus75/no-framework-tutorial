@@ -1,38 +1,38 @@
-Because this tutorial was so well-received, it inspired me to write a book. The book is a much more up to date version of this tutorial and covers a lot more. Click the link below to check it out (there is also a sample chapter available).
+Az alábbi útmutató kedvező fogadtatása arra ösztönözte a [szerzőt](https://github.com/PatrickLouys), hogy könyv formában is közreadja művét. A könyv a jelen útmutató javított és bővített változata, amely az alábbi linkre kattintva megrendelhető (angol nyelven).
 
-### [Professional PHP: Building maintainable and secure applications](http://patricklouys.com/professional-php/)
+### [Professzionális PHP: karbantartható és biztonságos alkalmazások építése](http://patricklouys.com/professional-php/)
 
 ![](http://patricklouys.com/img/professional-php-thumb.png)
 
-The tutorial is still available in it's original form below.
+Az útmutató eredeti formájában alább olvasható.
 
-## Create a PHP application without a framework
+## PHP alkalmazás létrehozása keretrendszer nélkül
 
-### Introduction
+### Bevezetés
 
-If you are new to the language, this tutorial is not for you. This tutorial is aimed at people who have grasped the basics of PHP and know a little bit about object-oriented programming.
+Ez az útmutató azoknak készült, akik már elsajátították a PHP nyelvet és tisztában vannak az objektum-orientált programozás alapjaival.
 
-You should have at least heard of [SOLID](http://en.wikipedia.org/wiki/SOLID_%28object-oriented_design%29). If you are not familiar with it, now would be a good time to familiarize yourself with the principles before you start with the tutorial.
+Ha még nem hallottál a [SOLID alapelvekről](https://www.refaktor.hu/tiszta-kod-5-resz-a-s-o-l-i-d-alapelvek/), akkor a jelen sorok elolvasása előtt hasznos lenne megismerkedni velük.
 
-I saw a lot of people coming into the Stack Overflow PHP chatroom and asking if framework X is any good. Most of the time the answer was that they should just use PHP and not a framework to build their application. But many are overwhelmed by this and don't know where to start.
+Számtalan emberrel találkoztam már a Stack Overflow PHP csevegőszobájában, akik a felől érdeklődtek, hogy melyik keretrendszer lenne számukra a legjobb. A legtöbb esetben a hozzáértők válasza az volt, hogy leginkább egyik sem. Ha nem muszáj, ne [erőltessék a keretrendszereket](http://legyes.hu/hu/post/miert-nem-hasznalok-php-frameworkot/), inkább natív PHP-t használjanak alkalmazásuk felépítéséhez. Sokan azonban nem tudják, hogy is fogjanak hozzá.
 
-So my goal with this is to provide an easy resource that people can be pointed to. In most cases a framework does not make sense and writing an application from scratch with the help of some third party packages is much, much easier than some people think.
+Az következő útmutató célja, hogy nekik nyújtson egyszerű, áttekinthető segítséget. A legtöbb esetben a keretrendszerek használatának nincs sok értelme és az alkalmazás nulláról (esetleg harmadik féltől származó csomagok használatával) való felépítése sokkal egyszerűbb, mint azt sokan gondolnák.
 
-**This tutorial was written for PHP 7.0 or newer versions.** If you are using an older version, please upgrade it before you start. I recommend that you use the [current stable version](http://php.net/downloads.php).
+**Ez az útmutató a PHP 7.0 vagy újabb változataihoz készült.** Ha régebbi verziót használsz, nem árt frissíteni a [legújabb stabil verzióra](http://php.net/downloads.php), mielőtt hozzáfogsz.
 
-So let's get started right away with the [first part](01-front-controller.md).
+Ha minden készen áll, vágjunk is bele az [első részbe](01-front-controller.md)!
 
-### Parts
+### Tartalomjegyzék
 
 1. [Front Controller](01-front-controller.md)
 2. [Composer](02-composer.md)
-3. [Error Handler](03-error-handler.md)
+3. [Hibakezelés](03-error-handler.md)
 4. [HTTP](04-http.md)
 5. [Router](05-router.md)
-6. [Dispatching to a Class](06-dispatching-to-a-class.md)
-7. [Inversion of Control](07-inversion-of-control.md)
-8. [Dependency Injector](08-dependency-injector.md)
-9. [Templating](09-templating.md)
-10. [Dynamic Pages](10-dynamic-pages.md)
-11. [Page Menu](11-page-menu.md)
+6. [Dispatcher](06-dispatching-to-a-class.md)
+7. [A vezérlés megfordítása](07-inversion-of-control.md)
+8. [Függőség befecskendezés](08-dependency-injector.md)
+9. [Sablonok](09-templating.md)
+10. [Dinamikus oldalak](10-dynamic-pages.md)
+11. [Oldalmenü](11-page-menu.md)
 12. [Frontend](12-frontend.md)
