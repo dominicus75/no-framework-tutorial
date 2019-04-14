@@ -1,53 +1,82 @@
-[next >>](02-composer.md)
+[következő fejezet >>](02-composer.md)
 
 ### Front Controller
 
-A [front controller](http://en.wikipedia.org/wiki/Front_Controller_pattern) is a single point of entry for your application.
+Először hozzunk létre egy üres könyvtárat a projektünk gyökérkönyvtárában, mondjuk `public` néven. Tegyünk róla, hogy az Apache `DOCUMENT_ROOT` környezeti változója erre a könyvtárra mutasson, vagyis a web felől csak ezen könyvtár tartalma legyen látható. Ide kerül majd minden olyan dolog, amit a web felül elérhetővé szeretnénk tenni, így a képeket, a felhasználó által feltöltött állományokat, css és js fájlokat tartalmazó alkönyvtárak.
 
-To start, create an empty directory for your project. You also need an entry point where all requests will go to. This means you will have to create an `index.php` file.
+Alkalmazásunk forrásállományait erősen ajánlott a `public` könyvtáron kívül, szintén a projekt gyökérkönyvtárában létrehozott `src` mappában tárolni, magát az alkalmazást pedig az ugyanitt létrehozott `app` alkönyvtárban (ha [Composert](02-composer.md){:target="_blank"} használunk, akkor az `app`, `public` és `src` mellé létre fogja hozni a `vendor` mappát is, ahol a harmadik féltől származó, Composer által kezelt osztályok fognak lakni). Ha a fentiek szerint építjük fel alkalmazásunk könyvtárszerkezetét elérhetjük, hogy forrásállományaink rejtve maradjanak a nem kívánt érdeklődők előtt.
 
-A common way to do this is to just put the `index.php` in the root folder of the projects. This is also how some frameworks do it. Let me explain why you should not do this.
+Szükség van ezen felül egy belépési pontra is, ahol az összes beérkező kérelem (request) és kimenő válasz (response) áthalad, ezért a `public` mappában el kell helyezni egy `index.php` állományt is, majd az ugyanitt létrehozott `.htaccess` fájl segítségével minden olyan beérkező kérelmet, ami nem egy létező fájl vagy könyvtár tartalmának elküldését kéri a szervertől, az `index.php`-re kell átirányítani, az alábbiak szerint:
 
-The `index.php` is the starting point, so it has to be inside the web server directory. This means that the web server has access to all subdirectories. If you set things up properly, you can still prevent it from accessing your subfolders where your application files are.
+```bash
+# Átirányítási szabályok, ha a rewrite modul engedélyezve van
+<IfModule mod_rewrite.c>
 
-But sometimes things don't go according to plan. And if something goes wrong and your files are set up as above, your whole application source code could be exposed to visitors. I won't have to explain why this is not a good thing.
+  RewriteEngine on
+  RewriteBase /
+  RewriteOptions MaxRedirects=10
 
-So instead of doing that, create a folder in your project folder called `public`. This is a good time to create an `src` folder for your application, also in the project root folder.
+  # Minden kérelem átirányítása az index.php-ra
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [NC,L,QSA]
 
-Inside the `public` folder you can now create your `index.php`. Remember that you don't want to expose anything here, so put just the following code in there:
-
-```php
-<?php declare(strict_types = 1); 
-
-require __DIR__ . '/../src/Bootstrap.php';
+</IfModule>
 ```
 
-`__DIR__` is a [magic constant](http://php.net/manual/en/language.constants.predefined.php) that contains the path of the directory. By using it, you can make sure that the `require` always uses the same relative path to the file it is used in. Otherwise, if you call the `index.php` from a different folder it will not find the file.
+Ezzel az `index.php` állományt sikeresen ki is neveztük alkalmazásunk [front controllerévé](https://hu.wikipedia.org/wiki/Front_vez%C3%A9rl%C5%91_tervez%C3%A9si_minta){:target="_blank"}, amely egyetlen központosított belépési pontot biztosít a beérkező kérelmek kezeléséhez.
 
-`declare(strict_types = 1);` sets the current file to [strict typing](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict). In this tutorial we are going to use this for all PHP files. This means that you can't just pass an integer as a parameter to a method that requires a string. If you don't use strict mode, it would be automatically casted to the required type. With strict mode, it will throw an Exception if it is the wrong type.
+Ha a fentiekkel elkészültünk, a projektünk könyvtárszerkezete valahogy így fog festeni:
 
-The `Bootstrap.php` will be the file that wires your application together. We will get to it shortly.
+```bash
+myProject/
+├── app/
+├── public/
+│   ├── .htaccess
+│   ├── index.php
+│   ├── css/
+│   ├── images/
+│   ├── js/
+│   └── uploads/
+├── src/
+└── vendor/
+```
 
-The rest of the public folder is reserved for your public asset files (like JavaScript files and stylesheets).
-
-Now navigate inside your `src` folder and create a new `Bootstrap.php` file with the following content:
+Ne feledjük, hogy az `index.php` csak kiindulási pont (most már azt is tudjuk, hogy front controller a becsületes neve), ezért alkalmazásunk logikája nem itt fog lakni. Helyezzük el az állomány elején az alábbi kódot:
 
 ```php
 <?php declare(strict_types = 1);
 
-echo 'Hello World!';
+require __DIR__ . '/../src/Bootstrap.php';
 ```
 
-Now let's see if everything is set up correctly. Open up a console and navigate into your projects `public` folder. In there type `php -S localhost:8000` and press enter. This will start the built-in webserver and you can access your page in a browser with `http://localhost:8000`. You should now see the 'hello world' message.
+A `__DIR__` egy előre definiált [mágikus konstans](http://php.net/manual/en/language.constants.predefined.php) amely az aktuális könyvtár elérési útját tartalmazza. Használatával biztosíthatjuk, hogy a `require` mindig a tartalmazó fájlhoz (jelen esetben az `index.php`) tartozó relatív elérési utat használja a kért állományok eléréséhez.
 
-If there is an error, go back and try to fix it. If you only see a blank page, check the console window where the server is running for errors.
+`declare(strict_types = 1);` engedélyezi a [szigorú típuskényszerítési módot](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict){:target="_blank"}, amely biztosítja, hogy ha nem a várt típusú paramétereket adjuk át egy függvénynek, akkor a PHP értelmező ne próbálja automatikusan átkonvertálni a kapott értéket, hanem dobjon egy kivételt (Exception). Ez azt jelenti, hogy ha a szigorú mód be van kapcsolva, akkor nem tudunk például egész számot (integer) paraméterként átadni egy olyan metódusnak, amely szöveget (string) vár, mert Exception lesz a jutalmunk.
 
-Now would be a good time to commit your progress. If you are not already using Git, set up a repository now. This is not a Git tutorial so I won't go over the details. But using version control should be a habit, even if it is just for a tutorial project like this.
+A `Bootstrap.php` lesz az a fájl, ami összedrótozza az alkalmazásunkat (rendszertöltő). Hamarosan foglalkozni fogunk vele is.
 
-Some editors and IDE's put their own files into your project folders. If that is the case, create a `.gitignore` file in your project root and exclude the files/directories. Below is an example for PHPStorm:
+Most navigáljunk az `src` mappába és hozzuk létre a `Bootstrap.php` állományt a következő tartalommal:
+
+```php
+<?php declare(strict_types = 1);
+
+echo 'Helló világ!';
+```
+
+Most pedig ellenőrizzük, hogy mindent jól csináltunk-e. Nyissuk meg a konzolt/terminált és navigáljunk a `public` mappába (`# cd /path/to/myproject/public`). Itt adjuk ki a `php index.php` parancsot. Ezzel (anélkül, hogy webszervert indítanánk) átadjuk a PHP értelmezőnek `index.php` állományunkat, ami – ha mindent jól csináltunk – lefuttatja azt és kiírja a kimenetre (jelen esetben a terminálra), hogy 'Helló világ!'.
+
+Ha nem azt a kimenetet kapjuk, amire számítottunk ('Helló világ!'), akkor térjünk vissza a megnyitott állományokhoz és keressük meg a hibát (esélyes, hogy elgépeltünk valamit). Ha csupán egy üres képernyő törekvéseink jutalma, ellenőrizzük, hogy telepítve van-e a gépünkre a PHP.
+
+Ha ideáig sikeresen eljutottunk, itt a remek alkalom, hogy megőrizzük az utókornak művünket. Ha még nem használjuk a [Gitet](https://szit.hu/doku.php?id=oktatas:programoz%C3%A1s:verzi%C3%B3kontroll:git){:target="_blank"}, telepítsük sebesen és hozzunk létre egy tárolót a projektünk számára. Jelen írásnak nem célja a Git verziókövető bemutatása, ezért nem megyek bele a részletekbe, az interneten számos kiváló leírás található hozzá, magyar nyelven is. Viszont a verziókövetésnek szokásunkká kell válnia, még akkor is, ha csak kisebb bemutató projekteken dolgozunk.
+
+Verziókövető használatakor ne feledjük, hogy néhány szerkesztő és IDE hajlamos rá, hogy saját állományait a projektmappánkban helyezze el. Ennek kivédésére (mivel ezeket a fájlokat nem szeretnénk verziókövetni) hozzunk létre egy `.gitignore` névre hallgató egyszerű szöveges fájlt a projektünk gyökerében és adjuk meg benne azokat a fájlokat és könyvtárakat, amelyeket figyelmen kivül akarunk hagyni a verziókövetésénél. Alább egy példa ([Geany](https://www.geany.org/){:target="_blank"} használatakor):
 
 ```
-.idea/
+vendor
+*.geany
 ```
 
-[next >>](02-composer.md)
+(A Composer által létrehozott `vendor` mappát szintén ki szoktuk venni a verziókövetésből, az alkalmazott IDE típusától függetlenül.)
+
+[következő fejezet >>](02-composer.md)
