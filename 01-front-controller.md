@@ -4,7 +4,7 @@
 
 Először hozzunk létre egy üres könyvtárat a projektünk gyökérkönyvtárában, mondjuk `public` néven. Tegyünk róla, hogy az Apache `DOCUMENT_ROOT` környezeti változója erre a könyvtárra mutasson, vagyis a web felől csak ezen könyvtár tartalma legyen látható. Ide kerül majd minden olyan dolog, amit a web felül elérhetővé szeretnénk tenni, így a képeket, a felhasználó által feltöltött állományokat, css és js fájlokat tartalmazó alkönyvtárak.
 
-Alkalmazásunk forrásállományait erősen ajánlott a `public` könyvtáron kívül, szintén a projekt gyökérkönyvtárában létrehozott `src` mappában tárolni, magát az alkalmazást pedig az ugyanitt létrehozott `app` alkönyvtárban (ha [Composert](02-composer.md) használunk, akkor az `app`, `public` és `src` mellé létre fogja hozni a `vendor` mappát is, ahol a harmadik féltől származó, Composer által kezelt osztályok fognak lakni). Ha a fentiek szerint építjük fel alkalmazásunk könyvtárszerkezetét elérhetjük, hogy forrásállományaink rejtve maradjanak a nem kívánt érdeklődők előtt.
+Alkalmazásunk forrásállományait erősen ajánlott a `public` könyvtáron kívül, szintén a projekt gyökérkönyvtárában létrehozott `src` mappában tárolni. Ha [Composert](02-composer.md) használunk, akkor az a `public` és az `src` mellé létre fogja hozni a `vendor` mappát is, ahol a harmadik féltől származó, Composer által kezelt osztályok fognak lakni. Ha a fentiek szerint építjük fel alkalmazásunk könyvtárszerkezetét elérhetjük, hogy forrásállományaink rejtve maradjanak a nem kívánt érdeklődők előtt.
 
 Szükség van ezen felül egy belépési pontra is, ahol az összes beérkező kérelem (request) és kimenő válasz (response) áthalad, ezért a `public` mappában el kell helyezni egy `index.php` állományt is, majd az ugyanitt létrehozott `.htaccess` fájl segítségével minden olyan beérkező kérelmet, ami nem egy létező fájl vagy könyvtár tartalmának elküldését kéri a szervertől, az `index.php`-re kell átirányítani, az alábbiak szerint:
 
@@ -30,7 +30,6 @@ Ha a fentiekkel elkészültünk, a projektünk könyvtárszerkezete valahogy íg
 
 ```bash
 myProject/
-├── app/
 ├── public/
 │   ├── .htaccess
 │   ├── index.php
@@ -68,7 +67,7 @@ Most pedig ellenőrizzük, hogy mindent jól csináltunk-e. Nyissuk meg a konzol
 
 Ha nem azt a kimenetet kapjuk, amire számítottunk ('Helló világ!'), akkor térjünk vissza a megnyitott állományokhoz és keressük meg a hibát (esélyes, hogy elgépeltünk valamit). Ha csupán egy üres képernyő törekvéseink jutalma, ellenőrizzük, hogy telepítve van-e a gépünkre a PHP.
 
-Ha ideáig sikeresen eljutottunk, itt a remek alkalom, hogy megőrizzük az utókornak művünket. Ha még nem használjuk a [Gitet](https://szit.hu/doku.php?id=oktatas:programoz%C3%A1s:verzi%C3%B3kontroll:git), telepítsük sebesen és hozzunk létre egy tárolót a projektünk számára. Jelen írásnak nem célja a Git verziókövető bemutatása, ezért nem megyek bele a részletekbe, az interneten számos kiváló leírás található hozzá, magyar nyelven is. Viszont a verziókövetésnek szokásunkká kell válnia, még akkor is, ha csak kisebb bemutató projekteken dolgozunk.
+Ha ideáig sikeresen eljutottunk, itt a remek alkalom, hogy megőrizzük az utókornak művünket. Ha még nem használjuk a [Gitet](https://szit.hu/doku.php?id=oktatas:programoz%C3%A1s:verzi%C3%B3kontroll:git), telepítsük sebesen és hozzunk létre egy tárolót a projektünk számára. Jelen írásnak nem célja a Git verziókövető bemutatása, ezért nem megyek bele a részletekbe, az interneten számos kiváló leírás található hozzá, [magyar nyelven](http://math.bme.hu/~balazs/git/) is. Viszont a verziókövetésnek szokásunkká kell válnia, még akkor is, ha csak kisebb bemutató projekteken dolgozunk.
 
 Verziókövető használatakor ne feledjük, hogy néhány szerkesztő és IDE hajlamos rá, hogy saját állományait a projektmappánkban helyezze el. Ennek kivédésére (mivel ezeket a fájlokat nem szeretnénk verziókövetni) hozzunk létre egy `.gitignore` névre hallgató egyszerű szöveges fájlt a projektünk gyökerében és adjuk meg benne azokat a fájlokat és könyvtárakat, amelyeket figyelmen kivül akarunk hagyni a verziókövetésénél. Alább egy példa ([Geany](https://www.geany.org/) használatakor):
 

@@ -1,16 +1,16 @@
-[<< previous](01-front-controller.md) | [next >>](03-error-handler.md)
+[<< előző fejezet](01-front-controller.md) | [következő fejezet >>](03-error-handler.md)
 
 ### Composer
 
-[Composer](https://getcomposer.org/) is a dependency manager for PHP.
+A [Composer](https://getcomposer.org/) a PHP függőségkezelője.
 
-Just because you are not using a framework does not mean you will have to reinvent the wheel every time you want to do something. With Composer, you can install third-party libraries for your application.
+Az a tény, hogy nem használunk keretrendszert, nem jelenti azt, hogy minden egyes alkalommal újra fel kell találnunk a kereket, akárhányszor új projektbe kezdünk. A Composer segítségével könnyedén telepíthetünk alkalmazásunkhoz akár harmadik féltől származó csomagokat (library-kat vagy osztályokat), vagy saját korábbi csomagjainkat (lokális vagy távoli privát tárolókból).
 
-If you don't have Composer installed already, head over to the website and install it. You can find Composer packages for your project on [Packagist](https://packagist.org/).
+Ha még nincs telepítve gépünkön a Composer, itt az ideje, hogy orvosoljuk ezt a hiányosságot. A program a legtöbb Linux disztribúció tárolóiban megtalálható, így nincs más teendőnk, mint kiadni az `apt-get install Composer` parancsot (Debian alapú rendszeren). A projektünkhöz esetleg szükséges Composer csomagokat megtalálhatjuk a [Packagisten](https://packagist.org/), ami a Composer alapértelmezett csomagtárolója.
 
-Create a new file in your project root folder called `composer.json`. This is the Composer configuration file that will be used to configure your project and its dependencies. It must be valid JSON or Composer will fail.
+Ha már rendelkezésre áll a Composer, hozzunk létre projektünk gyökérkönyvtárában egy `composer.json` állományt (ha ebből a könyvtárból konzolban kiadjuk a `composer init` parancsot, akkor a program megteszi ezt helyettünk, egyenként bekérve a szükséges adatokat). A Composer ebből az állományból nyeri projektünk és függőségeinek konfigurációs adatait. Ügyeljünk arra, hogy a fájlt érvényes JSON formátumban készítsük el, különben a Composer hibát fog dobni.
 
-Add the following content to the file:
+Írjuk az alábbiakat az imént létrehozott állományba:
 
 ```json
 {
@@ -40,7 +40,7 @@ In the autoload part you can see that I am using the `Example` namespace for the
 
 Open a new console window and navigate into your project root folder. There run `composer update`.
 
-Composer creates a `composer.lock` file that locks in your dependencies and a vendor directory. 
+Composer creates a `composer.lock` file that locks in your dependencies and a vendor directory.
 
 Committing the `composer.lock` file into version control is generally good practice for projects. It allows continuation testing tools (such as [Travis CI](https://travis-ci.org/)) to run the tests against the exact same versions of libraries that you're developing against. It also allows all people who are working on the project to use the exact same version of libraries i.e. it eliminates a source of "works on my machine" problems.
 
@@ -52,4 +52,4 @@ vendor/
 
 Now you have successfully created an empty playground which you can use to set up your project.
 
-[<< previous](01-front-controller.md) | [next >>](03-error-handler.md)
+[<< előző fejezet](01-front-controller.md) | [következő fejezet >>](03-error-handler.md)
