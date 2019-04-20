@@ -50,5 +50,13 @@ Ez magával vonja azt is, hogy [nem kell a függőségek tényleges forrását a
 vendor/
 ```
 
+####Ajánlott irodalom:
+
+Botond (Linuxvilág): [Composer PHP csomagkezelő telepítése](https://www.linuxportal.info/leirasok/web-hoszting/egyeb/composer-php-csomagkezelo-telepitese)
+
+Papp Krisztián: [A PHP-fejlesztők kedvenc zeneszerzője](https://www.letscode.hu/2015/03/12/composer-a-php-fejlesztok-kedvenc-zeneszerzoje)
+
+Sallai András: [Composer](https://szit.hu/doku.php?id=oktatas:web:composer)
+
 
 [<< előző fejezet](01-front-controller.md) | [következő fejezet >>](03-error-handler.md)
