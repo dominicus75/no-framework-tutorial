@@ -50,7 +50,7 @@ Ez magával vonja azt is, hogy [nem kell a függőségek tényleges forrását a
 vendor/
 ```
 
-####Ajánlott irodalom:
+###Ajánlott irodalom:
 
 Botond (Linuxvilág): [Composer PHP csomagkezelő telepítése](https://www.linuxportal.info/leirasok/web-hoszting/egyeb/composer-php-csomagkezelo-telepitese)
 
