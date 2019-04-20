@@ -56,7 +56,7 @@ Botond: [Composer PHP csomagkezelő telepítése](https://www.linuxportal.info/l
 
 Papp Krisztián: [A PHP-fejlesztők kedvenc zeneszerzője](https://www.letscode.hu/2015/03/12/composer-a-php-fejlesztok-kedvenc-zeneszerzoje)
 
-Sallai András: [Composer](https://szit.hu/doku.php?id=oktatas:web:composer)
+Sallai András: <a href="https://szit.hu/doku.php?id=oktatas:web:composer" target="_blank">Composer</a>
 
 
 [<< előző fejezet](01-front-controller.md) | [következő fejezet >>](03-error-handler.md)
