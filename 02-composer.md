@@ -36,20 +36,19 @@ Ha már rendelkezésre áll a Composer, hozzunk létre projektünk gyökérköny
 }
 ```
 
-In the autoload part you can see that I am using the `Example` namespace for the project. You can use whatever fits your project there, but from now on I will always use the `Example` namespace in my examples. Just replace it with your namespace in your own code.
+Az autoload tömbből kiderül, hogy jelen projektünkhöz az `Example` névteret használjuk. A jelen útmutató összes példájában ezt fogjuk alkalmazni. Ha más névteret vagy névtereket szeretnénk beállítani, akkor ezt kell lecserélni, vagy az `autoload/psr-4` tömböt értelemszerűen bővíteni.
 
-Open a new console window and navigate into your project root folder. There run `composer update`.
+Nyissunk meg egy új konzolablakot, majd navigáljunk a projekt gyökér könyvtárába. Itt adjuk ki a `composer update` parancsot.
 
-Composer creates a `composer.lock` file that locks in your dependencies and a vendor directory.
+A parancs hatására a Composer létrehozza projektünk gyökerében a `composer.lock` állományt, amely zárolja a függőségeket és a vendor mappát.
 
-Committing the `composer.lock` file into version control is generally good practice for projects. It allows continuation testing tools (such as [Travis CI](https://travis-ci.org/)) to run the tests against the exact same versions of libraries that you're developing against. It also allows all people who are working on the project to use the exact same version of libraries i.e. it eliminates a source of "works on my machine" problems.
+A `composer.lock` fájl verziókövetése erősen ajánlott, mert a Composer ebben tárolja a letöltött függőségek konkrét verziószámát. Ha ez rendelkezésre áll, akkor a Composer ez, nem pedig a `composer.json` alapján fogja letölteni a függőségeket. Ez akkor fontos igazán, ha egy projekten többen is dolgoznak. A `composer.lock` biztosítja, hogy mindenkinél azonos verziószámú függőségek legyenek telepítve, megkönnyítve a folyamatos integrációs tesztek (mint a [Travis CI](https://travis-ci.org/)) futtatását is.
 
-That being said, [you don't want to put the actual source code of your dependencies in your git repository](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md). So let's add a rule to our `.gitignore` file:
+Ez magával vonja azt is, hogy [nem kell a függőségek tényleges forrását a git tárolónkba helyezni](https://getcomposer.org/doc/faqs/should-i-commit-the-dependencies-in-my-vendor-directory.md), hiszen a Composer automatikusan letölti azokat, ha valaki telepíti a projektünket. Éppen ezért a `.gitignore` állományba vegyük fel a függőségeinket tartalmazó vendor mappát is:
 
 ```
 vendor/
 ```
 
-Now you have successfully created an empty playground which you can use to set up your project.
 
 [<< előző fejezet](01-front-controller.md) | [következő fejezet >>](03-error-handler.md)

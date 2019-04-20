@@ -72,10 +72,7 @@ Ha ideáig sikeresen eljutottunk, itt a remek alkalom, hogy megőrizzük az utó
 Verziókövető használatakor ne feledjük, hogy néhány szerkesztő és IDE hajlamos rá, hogy saját állományait a projektmappánkban helyezze el. Ennek kivédésére (mivel ezeket a fájlokat nem szeretnénk verziókövetni) hozzunk létre egy `.gitignore` névre hallgató egyszerű szöveges fájlt a projektünk gyökerében és adjuk meg benne azokat a fájlokat és könyvtárakat, amelyeket figyelmen kivül akarunk hagyni a verziókövetésénél. Alább egy példa ([Geany](https://www.geany.org/) használatakor):
 
 ```
-vendor
 *.geany
 ```
-
-(A Composer által létrehozott `vendor` mappát szintén ki szoktuk venni a verziókövetésből, az alkalmazott IDE típusától függetlenül.)
 
 [következő fejezet >>](02-composer.md)
