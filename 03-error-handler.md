@@ -1,16 +1,16 @@
-[<< previous](02-composer.md) | [next >>](04-http.md)
+[<< előző fejezet](02-composer.md) | [következő fejezet >>](04-http.md)
 
-### Error Handler
+### Hibakezelő
 
-An error handler allows you to customize what happens if your code results in an error.
+A hibakezelő segítségével meghatározható, mi történjen akkor, ha a kód futása közben hiba lép fel.
 
-A nice error page with a lot of information for debugging goes a long way during development. So the first package for your application will take care of that.
+Egy szép hibaoldal, amely sok információt szolgáltat a hibakereséshez, hosszú fejlesztőmunka eredménye. Készülő alkalmazásunk első csomagjának ezt a feladatot kellene ellátnia.
 
-I like [filp/whoops](https://github.com/filp/whoops), so I will show how you can install that package for your project. If you prefer another package, feel free to install that one. This is the beauty of programming without a framework, you have total control over your project.
+Ha nem szeretnénk most itt leragadni, számos kiváló hibakezelő csomagot találhatunk készen az interneten (github/packagist). Mi most a [filp/whoops](https://github.com/filp/whoops) névre hallgató megoldást fogjuk telepíteni a projektünkhöz, de lehet mást is választani. Ez a keretrendszer nélküli programozás igazi szépsége: teljes ellenőrzés a saját projektünk felett.
 
-An alternative package would be: [PHP-Error](https://github.com/JosephLenton/PHP-Error)
+Egy másik lehetséges hibakezelő csomag: [PHP-Error](https://github.com/JosephLenton/PHP-Error).
 
-To install a new package, open up your `composer.json` and add the package to the require part. It should now look like this:
+Az új csomag telepítéséhez nyissuk meg a `composer.json` állományunkat, majd adjuk hozzá a `filp/whoops` csomagot a require részhez, az alábbiak szerint:
 
 ```php
 "require": {
@@ -19,15 +19,34 @@ To install a new package, open up your `composer.json` and add the package to th
 },
 ```
 
-Now run `composer update` in your console and it will be installed.
+Ha esetleg saját – vagy más, packagisten nem publikált – hibakezelőt szeretnénk használni, azt is a fentiek szerint tehetjük meg, annyi kiegészítéssel, hogy a Composer figyelmét külön fel kell hívnunk arra, hogy csomagunkat ne az alapértelmezett repositoryban (packagist) keresse, hanem saját tárolónkban (privat repo). Ez esetben a `composer.json` állományban nem elég a `require` alatt megadni, hogy milyen csomagot szeretnénk használni (legyen a csomagunk neve mondjuk `myself/errorhandler`), de a forrást is meg kell jelölnünk, ahol megtalálható (saját gép, Github vagy BitBucket repository). Ez esetben a `composer.json` vonatkozó része valahogy így fog kinézni:
 
-But you can't use it yet. PHP won't know where to find the files for the classes. For this you will need an autoloader, ideally a [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloader. Composer already takes care of this for you, so you only have to add a `require __DIR__ . '/../vendor/autoload.php';` to your `Bootstrap.php`.
+```php
+"require": {
+    "php": ">=7.0.0",
+    "myself/errorhandler": "dev-master"
+},
+"repositories": [
+    {
+        "type": "git",
+        "url": "/path/to/errorhandler/.git"
+    }
+],
+```
 
-**Important:** Never show any errors in your production environment. A stack trace or even just a simple error message can help someone to gain access to your system. Always show a user friendly error page instead and send an email to yourself, write to a log or something similar. So only you can see the errors in the production environment.
+Ha GitHub vagy BitBucket tárolót használunk, akkor az `url` értéke értelemszerűen `https://github.com/myself/errorhandler.git` lesz. Saját csomag használata esetén figyeljünk arra, hogy – amennyiben közzé akarjuk tenni a művünket, illetve éles környezetben használni – akkor mindenképpen nyilvános tárolót (GitHub, BitBucket, stb.) adjunk meg. Azért ne a gépünkön található `.git` állományra hivatkozzunk a `repositories` tömbben, mert ahhoz csak mi férünk hozzá, így ha valaki telepíti a programunkat, a teljesíthetetlen függőség(ek) miatt nem tudja használni. Ha csak mi használjuk a projektünket (mint jelen esetben), akkor nyugodtan hivatkozhatunk a gépünkön lakó saját tárolónkra is.
 
-For development that does not make sense though -- you want a nice error page. The solution is to have an environment switch in your code. For now you can just set it to `development`.
+Ha ezzel kész vagyunk, akkor futtassuk a `composer update` parancsot konzolban, hogy a Composer telepíthesse az új csomagot és frissítse a `composer.lock` állományt.
 
-Then after the error handler registration, throw an `Exception` to test if everything is working correctly. Your `Bootstrap.php` should now look similar to this:
+A vágyott hibakezelő immár a `vendor` mappánkban lakik, használni viszont még nem tudjuk. A PHP ugyanis nem tudja, hol találja meg a kért osztályokhoz tartozó forrásállományokat. Ennek áthidalásához szükségünk lesz egy – ideális esetben a [PSR-4](http://www.php-fig.org/psr/psr-4/) szabványt megvalósító – autoloaderre. A Composer egész véletlenül éppen rendelkezik egy ilyennel. Ahhoz, hogy használni tudjuk, írjuk ezt (`require __DIR__ . '/../vendor/autoload.php';`) a `Bootstrap.php` állományunkba, majd adjuk ki konzolban a `composer dump-autoload` parancsot, hogy a Composer frissen telepített csomagunkat is felvegye az autoloaderbe (a `dump-autoload`-ra minden új csomag telepítése után szükség van).
+
+Fejlesztéshez, teszteléshez tökéletesen megfelel az így kapott psr-4 autoloader, viszont éles környezetben lassúnak bizonyulhat. Ezért élesítés/publikáció előtt (amikor az aktív fejlesztést már befejeztük), nem árt optimalizálni autoloaderünket a `composer dump-autoload --optimize` parancs segítségével. Az `--optimize` kapcsoló hatására psr-4 autoloaderünkből a Composer egy osztálytérképet (`vendor/composer/autoload_classmap.php`) generál, minden egyes osztályhoz külön hozzárendelve a forrásfájl elérési útját, némiképp lerövidítve a kért osztályok keresését.
+
+**Fontos:** Soha ne engedjük, hogy programunk éles környezetben a felhasználók által látható hibákat dobáljon. Ezek a – fejlesztés közben számunkra nagyon is hasznos – hibaüzenetek segítséget nyújthatnak mindenkinek, aki sebezhetőségeket keresve hozzá szeretne férni a rendszerünkhöz. Hiba esetén a program mindig egy felhasználóknak szánt hibaoldalt mutasson, ahol éppen annyi információt tegyünk közzé, amennyi a felhasználóra tartozik (pl. egy 500-as HTTP hibaoldal), majd a hiba lényegi részét küldessük el magunknak géplevélben, esetleg naplózzuk (errorlog). Ügyeljünk arra, hogy a telepített/élesített környezet esetleges hibáit csak mi láthassuk.
+
+Bár a fejlesztés szempontjából nem sok értelme van, de mégis szeretnénk magunknak egy szép hibaoldalt, akkor helyezzünk el egy környezetválasztó kapcsolót a kódunkban, és állítsuk be `development` értékre.
+
+A hibakezelőnk regisztrációját követően dobjunk egy `Exception`-t, kipróbálandó, hogy minden megfelelően működik-e. A `Bootstrap.php` állományunk vonatkozó része ennek megfelelően így fog kinézni:
 
 ```php
 <?php declare(strict_types = 1);
@@ -41,7 +60,7 @@ error_reporting(E_ALL);
 $environment = 'development';
 
 /**
-* Register the error handler
+* Hibakezelő regisztrálása
 */
 $whoops = new \Whoops\Run;
 if ($environment !== 'production') {
@@ -57,6 +76,6 @@ throw new \Exception;
 
 ```
 
-You should now see a error page with the line highlighted where you throw the exception. If not, go back and debug until you get it working. Now would also be a good time for another commit.
+Ideális esetben egy hiba oldalt kellene látnunk, azon sor kiemelésével, ahol az `Exception` eldobásra került, illetve a hiba felmerült. Ha mégsem, akkor menjünk vissza a forrásba bogarászni (hibát keresni), míg a várt kimenetet nem kapjuk. Ennek végeztével ne felejtsünk el commitolni (git).
 
-[<< previous](02-composer.md) | [next >>](04-http.md)
+[<< előző fejezet](02-composer.md) | [következő fejezet >>](04-http.md)
