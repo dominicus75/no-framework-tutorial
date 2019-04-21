@@ -1,16 +1,31 @@
-[<< previous](03-error-handler.md) | [next >>](05-router.md)
+[<< előző fejezet](03-error-handler.md) | [következő fejezet >>](05-router.md)
 
 ### HTTP
 
-PHP already has a few things built in to make working with HTTP easier. For example there are the [superglobals](http://php.net/manual/en/language.variables.superglobals.php) that contain the request information.
+A PHP rendelkezik jó néhány olyan eszközzel, amelyek könnyebbé teszik a HTTP-vel való munkát. Ilyenek például az előre definiált vagy [szuperglobális](http://php.net/manual/en/language.variables.superglobals.php) asszociatív tömbök, amelyek tartalmazzák a szerver és a kérelem adatait. Ezek a beépített változók bárhonnan elérhetők, a `global` kulcsszó használata nélkül.
+
+#### $_SERVER ####
+A szerver és a futtatási környezet változói, fejléceket, útvonalakat és a futó scripre vonatkozó információkat tartalmaz. A `QUERY_STRING` és `REQUEST_URI` kulccsal azonosított elemei az [RFC 3986 ajánlás](http://www.faqs.org/rfcs/rfc3986.html) szerint [url-kódolva](https://www.php.net/manual/en/function.rawurlencode.php) vannak (a kódolást a böngészőnk végzi, a kérelem elküldése előtt). Ez azt jelenti, hogy minden nem ascii karakter (pl. magyar ékezetes betűk) helyén egy százalékjel és egy kétjegyű hexadecimális szám található. E kódolt karakterláncból a PHP [rawurldecode()](https://www.php.net/manual/en/function.rawurldecode.php) függvénye segítségével nyerhetjük ki az eredeti szöveget.
+#### $_GET ####
+A HTTP GET metódussal érkező adatok (vagyis a kulcs-érték párokra bontott `QUERY_STRING`) lelőhelye. A $_SERVER tömbbel ellentétben az adatok itt már url-dekódolva vannak.
+#### $_POST ####
+A HTTP POST metódussal érkező, `application/x-www-form-urlencoded` vagy `multipart/form-data` típusú adatokat tárolja.
+#### $_REQUEST ####
+Alapértelmezés szerint tartalmazza a $_GET, $_POST és a $_COOKIE tömbök tartalmát.
+#### $_SESSION ####
+Az aktuális script által hozzáférhető, munkamenet-változókat tartalmazza. A [munkamenet-kezelés](http://webprogramozas.inf.elte.hu/tananyag/wf2/lecke17_lap1.html#hiv1) a HTTP protokoll állapotmentességéből fakadó problémákat hivatott orvosolni, lehetővé téve a kliensek megkülönböztetését és a kliensenkénti adattárolást a szerveren.
+#### $_COOKIE ####
+A [setcookie()](https://www.php.net/manual/en/function.setcookie.php) függvény által beállított sütiket hivatott tárolni.
+#### $_FILES ####
+A felhasználók által a HTTP POST metódussal feltöltött állományok adatait tartalmazza.
 
 These are good if you just want to get a small script up and running, something that won't be hard to maintain. However, if you want to write clean, maintainable, [SOLID](http://en.wikipedia.org/wiki/SOLID_%28object-oriented_design%29) code, then you will want a class with a nice object-oriented interface that you can use in your application instead.
 
 Once again, you don't have to reinvent the wheel and just install a package. I decided to write my own [HTTP component](https://github.com/PatrickLouys/http) because I did not like the existing components, but you don't have to do the same.
 
-Some alternatives: [Symfony HttpFoundation](https://github.com/symfony/HttpFoundation), [Nette HTTP Component](https://github.com/nette/http), [Aura Web](https://github.com/auraphp/Aura.Web), [sabre/http](https://github.com/fruux/sabre-http)
+Néhány alternatíva: [Symfony HttpFoundation](https://github.com/symfony/HttpFoundation), [Nette HTTP Component](https://github.com/nette/http), [Aura Web](https://github.com/auraphp/Aura.Web), [sabre/http](https://github.com/fruux/sabre-http)
 
-In this tutorial I will use my own HTTP component, but of course you can use any package that you like. You just have to adapt the code from the tutorial yourself.
+Ebben az útmutatóban a `PatrickLouys/http` csomagot fogjuk használni, de ha tudsz jobbat, nyugodtan használd azt. You just have to adapt the code from the tutorial yourself.
 
 Again, edit the `composer.json` to add the new component and then run `composer update`:
 
@@ -63,4 +78,4 @@ Remember that the object is only storing data, so if you set multiple status cod
 
 I will show you in later parts how to use the different features of the components. In the meantime, feel free to read the [documentation](https://github.com/PatrickLouys/http) or the source code if you want to find out how something works.
 
-[<< previous](03-error-handler.md) | [next >>](05-router.md)
+[<< előző fejezet](03-error-handler.md) | [következő fejezet >>](05-router.md)
