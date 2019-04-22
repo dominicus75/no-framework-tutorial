@@ -19,15 +19,11 @@ A [setcookie()](https://www.php.net/manual/en/function.setcookie.php) függvény
 #### $_FILES ####
 A felhasználók által a HTTP POST metódussal feltöltött állományok adatait tartalmazza.
 
-These are good if you just want to get a small script up and running, something that won't be hard to maintain. However, if you want to write clean, maintainable, [SOLID](http://en.wikipedia.org/wiki/SOLID_%28object-oriented_design%29) code, then you will want a class with a nice object-oriented interface that you can use in your application instead.
+Ezek a változók (kellő óvatosság mellett, mert zömében a felhasználótól származó adatokat tartalmaznak, amelyekben nem bízhatunk) hasznosak lehetnek ha csak egy egyszerűbb scriptet szeretnénk kapni, amit nem túl nehéz karbantartani. Ha azonban [tiszta](https://hup.hu/node/143736), könnyen karbantartható, [SOLID](https://www.refaktor.hu/tiszta-kod-5-resz-a-s-o-l-i-d-alapelvek/) kód a célunk, akkor egy szép, átlátható, objektumorientált felületet kell létrehoznunk.
 
-Once again, you don't have to reinvent the wheel and just install a package. I decided to write my own [HTTP component](https://github.com/PatrickLouys/http) because I did not like the existing components, but you don't have to do the same.
+Ehhez nem kell feltétlenül újra feltalálnunk a kereket (ha nem akarjuk), elég a megfelelő csomagot telepíteni. Ebben az útmutatóban a [PatrickLouys/http](https://github.com/PatrickLouys/http) csomagot fogjuk használni, de ha tudsz jobbat, nyugodtan használd azt. Íme néhány alternatíva: [Symfony HttpFoundation](https://github.com/symfony/HttpFoundation), [Nette HTTP Component](https://github.com/nette/http), [Aura Web](https://github.com/auraphp/Aura.Web), [sabre/http](https://github.com/fruux/sabre-http)
 
-Néhány alternatíva: [Symfony HttpFoundation](https://github.com/symfony/HttpFoundation), [Nette HTTP Component](https://github.com/nette/http), [Aura Web](https://github.com/auraphp/Aura.Web), [sabre/http](https://github.com/fruux/sabre-http)
-
-Ebben az útmutatóban a `PatrickLouys/http` csomagot fogjuk használni, de ha tudsz jobbat, nyugodtan használd azt. You just have to adapt the code from the tutorial yourself.
-
-Again, edit the `composer.json` to add the new component and then run `composer update`:
+Adjuk is hozzá a kiválasztott HTTP komponenst a `composer.json` függőségeihez, majd futtassuk a `composer update` parancsot:
 
 ```json
   "require": {
@@ -37,16 +33,14 @@ Again, edit the `composer.json` to add the new component and then run `composer 
   },
 ```
 
-Now you can add the following below your error handler code in your `Bootstrap.php` (and don't forget to remove the exception):
+Ha ez megvan, akkor az előző fejezetben megírt hibakezelő kód alá írjuk a következőket a `Bootstrap.php` állományba (és ne felejtsük eltávolítani a tesztelési célzattal beszúrt Exception-t):
 
 ```php
 $request = new \Http\HttpRequest($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER);
 $response = new \Http\HttpResponse;
 ```
 
-This sets up the `Request` and `Response` objects that you can use in your other classes to get request data and send a response back to the browser.
-
-To actually send something back, you will also need to add the following snippet at the end of your `Bootstrap.php` file:
+Ezzel beállítottuk azokat a `Request` és `Response` objektumokat, amelyeket alkalmazásunk más osztályai használhatnak a kérelem adatainak kinyerésére és a válasz elküldésére a böngészőnek. A válasz elküldéséhez adjuk hozzá a következő kódrészletet a `Bootstrap.php` végéhez:
 
 ```php
 foreach ($response->getHeaders() as $header) {
@@ -56,26 +50,28 @@ foreach ($response->getHeaders() as $header) {
 echo $response->getContent();
 ```
 
-This will send the response data to the browser. If you don't do this, nothing happens as the `Response` object only stores data. This is handled differently by most other HTTP components where the classes send data back to the browser as a side-effect, so keep that in mind if you use another component.
+Ez fogja elküldeni válaszunkat a felhasználó böngészőjének. Ha ezt nem tesszük meg, akkor nem fog történni semmi, mert a `Response` objektum csak eltárolja az adatokat és a megfelelő függvény meghívása nélkül esze ágában sem lesz elküldeni őket. Ezt a legtöbb HTTP komponens másképpen kezeli és mintegy mellékhatásként küld adatokat a böngészőnek. Ezt tartsuk szem előtt, ha másik komponenst használunk és a meglepetések elkerülése végett olvassuk el figyelmesen az adott csomag dokumentációját.
 
-The second parameter of `header()` is false because otherwise existing headers will be overwritten.
+A `header()` [függvény](https://www.php.net/manual/en/function.header.php) második paramétere a kódban azért `false`, mert így több azonos típusú (de eltérő tartalmú) fejléc sort is elküldhetünk (ellenkező esetben a függvény felülírja a meglévő fejléceket).
 
-Right now it is just sending an empty response back to the browser with the status code `200`; to change that, add the following code between the code snippets from above (just on top of the `foreach` statement):
+`Response` objektumunk most csupán egy üres választ küld a böngészőnek, az aktuális HTTP státusz kóddal (200). Ha azt szeretnénk, hogy üzenettörzse is legyen a válaszunknak, szúrjuk be a következő kódot a `foreach` kifejezés fölé:
 
 ```php
 $content = '<h1>Hello World</h1>';
 $response->setContent($content);
 ```
 
-If you want to try a 404 error, use the following code:
+Ha a közkedvelt 404-el szeretnénk megörvendeztetni a klienst, akkor használjuk az alábbi kódot:
 
 ```php
 $response->setContent('404 - Page not found');
 $response->setStatusCode(404);
 ```
 
-Remember that the object is only storing data, so if you set multiple status codes before you send the response, only the last one will be applied.
+Ne feledjük, hogy az objektumpéldány csak adatokat tárol, így a válasz elküldése előtt több állapotkódot is beállíthatunk rajta, de csak az utolsót fogja elküldeni.
 
-I will show you in later parts how to use the different features of the components. In the meantime, feel free to read the [documentation](https://github.com/PatrickLouys/http) or the source code if you want to find out how something works.
+Azon HTTP megoldások, amelyek a [PSR-7 szabványt](https://www.php-fig.org/psr/psr-7/) implementálják, mint a [Slim/Http/Response](https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Response.php), a HTTP objektumokra a PSR által megkövetelt [immutable](https://www.refaktor.hu/megvaltoztathatatlan-objektumok/) tervezési mintát alkalmazzák, amely nem teszi lehetővé a `Response` objektumpéldányunk állapotának megváltoztatását. A PSR-7-ben a setterek helyett (pl. a példánkban látott `setStatusCode()`) olyan metódusok állnak rendelkezésünkre, amelyek a megváltoztatni kívánt tulajdonságot egy másik (klónozott) objektumpéldányon állítják be (ilyen a `Slim/Http/Response::withStatus()` metódusa), míg az eredeti példányt változatlanul hagyják (innen a tervezési minta neve).
+
+A későbbi részekben bemutatjuk, hogy lehet használni az egyes komponensek különböző funkcióit. Részletesebb információkért lapozzunk bele a [dokumentációba](https://github.com/PatrickLouys/http), vagy böngésszük a forráskódot, ha szeretnénk mélyebben megérteni az összetevő működését, nem csak használni azt.
 
 [<< előző fejezet](03-error-handler.md) | [következő fejezet >>](05-router.md)
