@@ -51,7 +51,7 @@ require __DIR__ . '/../src/Bootstrap.php';
 
 A `__DIR__` egy előre definiált [mágikus konstans](http://php.net/manual/en/language.constants.predefined.php) amely az aktuális könyvtár elérési útját tartalmazza. Használatával biztosíthatjuk, hogy a `require` mindig a tartalmazó fájlhoz (jelen esetben az `index.php`) tartozó relatív elérési utat használja a kért állományok eléréséhez.
 
-`declare(strict_types = 1);` engedélyezi a [szigorú típuskényszerítési módot](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict), amely biztosítja, hogy ha nem a várt típusú paramétereket adjuk át egy függvénynek, akkor a PHP értelmező ne próbálja automatikusan átkonvertálni a kapott értéket, hanem dobjon egy kivételt (Exception). Ez azt jelenti, hogy ha a szigorú mód be van kapcsolva, akkor nem tudunk például egész számot (integer) paraméterként átadni egy olyan metódusnak, amely szöveget (string) vár, mert Exception lesz a jutalmunk.
+A `declare(strict_types = 1);` kód engedélyezi a [szigorú típuskényszerítési módot](http://php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict), amely biztosítja, hogy ha nem a várt típusú paramétereket adjuk át egy függvénynek, akkor a PHP értelmező ne próbálja automatikusan átkonvertálni a kapott értéket, hanem dobjon egy kivételt (Exception). Ez azt jelenti, hogy ha a szigorú mód be van kapcsolva, akkor nem tudunk például egész számot (integer) paraméterként átadni egy olyan metódusnak, amely szöveget (string) vár, mert Exception lesz a jutalmunk.
 
 A `Bootstrap.php` lesz az a fájl, ami összedrótozza az alkalmazásunkat (rendszertöltő). Hamarosan foglalkozni fogunk vele is.
 

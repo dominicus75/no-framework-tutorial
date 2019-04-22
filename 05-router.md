@@ -1,18 +1,14 @@
-[<< previous](04-http.md) | [next >>](06-dispatching-to-a-class.md)
+[<< előző fejezet](04-http.md) | [következő fejezet >>](06-dispatching-to-a-class.md)
 
 ### Router
 
-A router dispatches to different handlers depending on rules that you have set up.
+A router a megfelelő komponensek felé irányít a megadott beállítások függvényében, tehát szolgáltatást vagy tartalmat párosít az url-hez. Aki esetleg úgy gondolja, hogy az Apache `mod_rewrite` modulja segítségével egy megfelelően összerakott `.htaccess` fájlban is [éppen ez zajlik](https://medium.com/dotindot/url-routing-megval%C3%B3s%C3%ADt%C3%A1sa-statikus-gener%C3%A1l%C3%A1s%C3%BA-weboldalakon-13ac76bd253c), az jól gondolja.
 
-With your current setup it does not matter what URL is used to access the application, it will always result in the same response. So let's fix that now.
+A `.htaccess` egyszerű és elegáns megoldás, de csak Apache webszervereken működik, ott is csak akkor, ha a `mod_rewrite` modul engedélyezve van a `php.ini` konfigurációs állományban. Olyan megoldásra van tehát szükségünk, ami nem csak Apache alatt muzsikál és amennyire csak lehetséges, független a szerver beállításaitól. Erre találták ki az alkalmazásunk részét képező útválasztó (router) mechanizmust és többek közt ezért is irányítottunk az első leckében minden nem létező fájlokra és mappákra irányuló kérelmet az index.php névre hallgató front kontrollerünkre, ahelyett hogy ott helyben (a `.htaccess`-ben) a $_GET tömb egyes elemeihez rendeltük volna az url részeit.
 
-I will use [FastRoute](https://github.com/nikic/FastRoute) in this tutorial. But as always, you can pick your own favorite package.
+Jelenlegi beállításainkkal bármilyen url-el hívjuk meg az alkalmazásunkat, ugyan azt a választ fogjuk kapni. Ideje ezen változtatnunk. Bemutató alkalmazásunkban a [FastRoute](https://github.com/nikic/FastRoute) komponenst fogjuk használni, de ahogy a többi fejezetben, itt is lecserélhetjük ezt kedvenc csomagunkra, ha van ilyen. Néhány lehetséges alternatíva: [symfony/Routing](https://github.com/symfony/Routing), [Aura.Router](https://github.com/auraphp/Aura.Router), [fuelphp/routing](https://github.com/fuelphp/routing), [Klein](https://github.com/chriso/klein.php).
 
-Alternative packages: [symfony/Routing](https://github.com/symfony/Routing), [Aura.Router](https://github.com/auraphp/Aura.Router), [fuelphp/routing](https://github.com/fuelphp/routing), [Klein](https://github.com/chriso/klein.php)
-
-By now you know how to install Composer packages, so I will leave that to you.
-
-Now add this code block to your `Bootstrap.php` file where you added the 'hello world' message in the last chapter.
+Telepítsük a kiválasztott routert a már ismert módon, majd írjuk a következő kódot a [`Bootstrap.php`](https://github.com/PatrickLouys/professional-php-sample-code/blob/master/src/Bootstrap.php) fájlba, a `Request` után, de még a `Response` elé:
 
 ```php
 $dispatcher = \FastRoute\simpleDispatcher(function (\FastRoute\RouteCollector $r) {
@@ -42,11 +38,9 @@ switch ($routeInfo[0]) {
 }
 ```
 
-In the first part of the code, you are registering the available routes for your application. In the second part, the dispatcher gets called and the appropriate part of the switch statement will be executed. If a route was found, the handler callable will be executed.
+A fenti kód első részében az alkalmazásunkban jelenleg elérhető útvonalakat regisztráltuk. Ez után meghívjuk a dispatcher-t ("menetirányító") majd a kapott kimenet függvényében végrehajtódik a switch kifejezés megfelelő része. Ha az útvonal létezik (3. eset), lefut a beállított kezelő-függvény, ha nem létezik (1. eset), vagy nem engedélyezett (2. eset) akkor a megfelelő hibaoldalra irányítjuk a felhasználót.
 
-This setup might work for really small applications, but once you start adding a few routes your bootstrap file will quickly get cluttered. So let's move them out into a separate file.
-
-Create a `Routes.php` file in the `src/` folder. It should look like this:
+Ez a megoldás valóban kis alkalmazásoknál megfelelő lehet, de ha további útvonalakat adunk a bootstrap állományunkhoz, hamar áttekinthetetlenné válik. Ennek elkerülésére az útvonalainkat hasznos lehet egy külön fájlban tárolni. Hozzuk létre tehát a `Routes.php` állományt az `src/` mappában, az alábbi tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
@@ -61,7 +55,7 @@ return [
 ];
 ```
 
-Now let's rewrite the route dispatcher part to use the `Routes.php` file.
+Most írjuk át az útvonal dispatcher részét a `Routes.php` alkalmazásához.
 
 ```php
 $routeDefinitionCallback = function (\FastRoute\RouteCollector $r) {
@@ -74,8 +68,8 @@ $routeDefinitionCallback = function (\FastRoute\RouteCollector $r) {
 $dispatcher = \FastRoute\simpleDispatcher($routeDefinitionCallback);
 ```
 
-This is already an improvement, but now all the handler code is in the `Routes.php` file. This is not optimal, so let's fix that in the next part.
+Ez már egy fokkal jobb, de most az összes kezelő kódunk a `Routes.php`-ban lakozik. Ez nem a legjobb megoldás, ezért a következő fejezetben majd javítani fogjuk.
 
-Don't forget to commit your changes at the end of each chapter.
+Ne felejtsük el commitolni munkánkat minden egyes fejezet végén!
 
-[<< previous](04-http.md) | [next >>](06-dispatching-to-a-class.md)
+[<< előző fejezet](04-http.md) | [következő fejezet >>](06-dispatching-to-a-class.md)
