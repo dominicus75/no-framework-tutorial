@@ -3,6 +3,7 @@
 ### Átirányítás egy osztályba
 
 A jelen útmutató nyomán szárba szökkenő bemutató alkalmazásunk nem valósítja meg az [MVC (Model-View-Controller)](https://hu.wikipedia.org/wiki/Modell-n%C3%A9zet-vez%C3%A9rl%C5%91) tervezési mintát. Ennek az az oka, hogy szerintem az MVC-t nem lehet megfelelően implementálni a PHP-ben, legalábbis nem az eredetileg kigondolt módon. A témával bővebben az [MVC-útmutató kezdőknek](http://blog.ircmaxell.com/2014/11/a-beginners-guide-to-mvc-for-web.html) című írás foglalkozik (angolul).
+
 *A fordító megjegyzése: magyarul nem találtam a szerző által hivatkozott cikkel azonos tartalmút, csak [Pásztor János](https://www.refaktor.hu/tiszta-kod-6-resz-beszelnunk-kell-az-mvc-rol/) vagy [Szél Péter](https://kszk.sch.bme.hu/2012/03/18/mi-van-az-mvc-tervezesi-mintan-tul/) írása tér ki az MVC webes alkalmazásának korlátaira. Sallai András pedig így [foglalja össze](https://szit.hu/doku.php?id=oktatas:programoz%C3%A1s:mvc) a Patrick Louys által felvetett problémát: "A web erősen támaszkodik a HTTP protokollra, amely állapotmentes. Ez azt jelenti, hogy nincs folytonos kapcsolat a böngésző és a webszerver között. Minden kérés egy újabb kapcsolatot hoz létre. Ha böngésző megkapta a választ, zárja a kapcsolatot. Ez egy olyan helyzet, amelyre nem gondoltak az eredeti MVC fejlesztői."*.
 
 Tehát egyelőre felejtsük el az MVC-t és helyette inkább aggódjunk a [vonatkozások szétválasztása (SoC)](http://www.clean-code-developer.hu/separation-of-concerns-soc/) miatt...
