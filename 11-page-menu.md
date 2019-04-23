@@ -1,4 +1,4 @@
-[<< previous](10-dynamic-pages.md) | [next >>](12-frontend.md)
+[<< előző fejezet](10-dynamic-pages.md) | [következő fejezet >>](12-frontend.md)
 
 ### Page Menu
 
@@ -20,7 +20,7 @@ But before we start, install the latest version of Twig with composer (`composer
 
 Then create the a `TwigRenderer.php` in your `src/Template` folder that looks like this:
 
-```php 
+```php
 <?php declare(strict_types = 1);
 
 namespace Example\Template;
@@ -45,7 +45,7 @@ class TwigRenderer implements Renderer
 
 As you can see, on the render function call a `.html` is added. This is because Twig does not add a file ending by default and you would have to specifiy it on every call otherwise. By doing it like this, you can use it in the same way as you used Mustache.
 
-Add the following code to your `Dependencies.php` file: 
+Add the following code to your `Dependencies.php` file:
 
 ```php
 $injector->delegate('Twig_Environment', function () use ($injector) {
@@ -114,13 +114,13 @@ And your `Page.html` to this:
 {% endblock %}
 ```
 
-If you refresh your homepage now, you should see the menu. But if you go to a subpage, the menu is not there but the `<hr>` line is. 
+If you refresh your homepage now, you should see the menu. But if you go to a subpage, the menu is not there but the `<hr>` line is.
 
 The problem is that we are only passing the `menuItems` to the homepage. Doing that over and over again for all pages would be a bit tedious and a lot of work if something changes. So let's fix that in the next step.
 
 We could create a global variable that is usable by all templates, but that is not a good idea here. We will add different parts of the site in the future like an admin area and we will have a different menu there.
 
-So instead we will use a custom renderer for the frontend. First we create an empty interface that extends the existing `Renderer` interface. 
+So instead we will use a custom renderer for the frontend. First we create an empty interface that extends the existing `Renderer` interface.
 
 ```php
 <?php declare(strict_types = 1);
@@ -163,7 +163,7 @@ As you can see we have a dependency on a `Renderer` in this class. This class is
 
 Of course we also need to add another alias to the dependencies file.
 
-```php 
+```php
 $injector->alias('Example\Template\FrontendRenderer', 'Example\Template\FrontendTwigRenderer');
 ```
 
@@ -257,4 +257,4 @@ class FrontendTwigRenderer implements FrontendRenderer
 
 Everything still working? Awesome. Commit everything and move on to the next chapter.
 
-[<< previous](10-dynamic-pages.md) | [next >>](12-frontend.md)
+[<< előző fejezet](10-dynamic-pages.md) | [következő fejezet >>](12-frontend.md)

@@ -1,4 +1,4 @@
-[<< previous](11-page-menu.md) | [next >>](to-be-continued.md)
+[<< előző fejezet](11-page-menu.md) | [következő fejezet >>](to-be-continued.md)
 
 
 ### Frontend
@@ -99,7 +99,7 @@ body {
     top: 0;
     left: 0;
     bottom: 0;
-    z-index: 1000; 
+    z-index: 1000;
     background: #191818;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
@@ -184,5 +184,5 @@ return [
 ];
 ```
 
-[<< previous](11-page-menu.md) | [next >>](to-be-continued.md)
+[<< előző fejezet](11-page-menu.md) | [következő fejezet >>](to-be-continued.md)
 

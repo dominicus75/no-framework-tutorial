@@ -1,4 +1,4 @@
-[<< previous](07-inversion-of-control.md) | [next >>](09-templating.md)
+[<< előző fejezet](07-inversion-of-control.md) | [következő fejezet >>](09-templating.md)
 
 ### Dependency Injector
 
@@ -92,6 +92,6 @@ class Homepage
 
 As you can see now the class has two dependencies. Try to access the page with a GET parameter like this `http://localhost:8000/?name=Arthur%20Dent`.
 
-Congratulations, you have now successfully laid the groundwork for your application. 
+Congratulations, you have now successfully laid the groundwork for your application.
 
-[<< previous](07-inversion-of-control.md) | [next >>](09-templating.md)
+[<< előző fejezet](07-inversion-of-control.md) | [következő fejezet >>](09-templating.md)

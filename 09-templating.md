@@ -1,4 +1,4 @@
-[<< previous](08-dependency-injector.md) | [next >>](10-dynamic-pages.md)
+[<< előző fejezet](08-dependency-injector.md) | [következő fejezet >>](10-dynamic-pages.md)
 
 ### Templating
 
@@ -16,7 +16,7 @@ You could just type hint against the concrete class. But the problem with this a
 
 In other words, all your code that uses the engine will be coupled to this mustache package. If you want to change the implementation you have a problem. Maybe you want to switch to Twig, maybe you want to write your own class or you want to add functionality to the engine. You can't do that without going back and changing all your code that is tightly coupled.
 
-What we want is loose coupling. We will type hint against an interface and not a class/implementation. So if you need another implementation, you just implement that interface in your new class and inject the new class instead. 
+What we want is loose coupling. We will type hint against an interface and not a class/implementation. So if you need another implementation, you just implement that interface in your new class and inject the new class instead.
 
 Instead of editing the code of the package we will use the [adapter pattern](http://en.wikipedia.org/wiki/Adapter_pattern). This sounds a lot more complicated than it is, so just follow along.
 
@@ -86,7 +86,7 @@ class Homepage
     private $renderer;
 
     public function __construct(
-        Request $request, 
+        Request $request,
         Response $response,
         Renderer $renderer
     ) {
@@ -138,4 +138,4 @@ Now you can go back to your `Homepage` controller and change the render line to 
 
 Navigate to the hello page in your browser to make sure everything works. And as always, don't forget to commit your changes.
 
-[<< previous](08-dependency-injector.md) | [next >>](10-dynamic-pages.md)
+[<< előző fejezet](08-dependency-injector.md) | [következő fejezet >>](10-dynamic-pages.md)

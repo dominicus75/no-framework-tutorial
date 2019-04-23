@@ -1,4 +1,4 @@
-[<< previous](06-dispatching-to-a-class.md) | [next >>](08-dependency-injector.md)
+[<< előző fejezet](06-dispatching-to-a-class.md) | [következő fejezet >>](08-dependency-injector.md)
 
 ### Inversion of Control
 
@@ -48,4 +48,4 @@ The `Http\HttpResponse` object implements the `Http\Response` interface, so it f
 
 Now everything should work again. But if you follow this example, all your objects that are instantiated this way will have the same objects injected. This is of course not good, so let's fix that in the next part.
 
-[<< previous](06-dispatching-to-a-class.md) | [next >>](08-dependency-injector.md)
+[<< előző fejezet](06-dispatching-to-a-class.md) | [következő fejezet >>](08-dependency-injector.md)

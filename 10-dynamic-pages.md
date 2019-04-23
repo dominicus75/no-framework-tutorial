@@ -1,4 +1,4 @@
-[<< previous](09-templating.md) | [next >>](11-page-menu.md)
+[<< előző fejezet](09-templating.md) | [következő fejezet >>](11-page-menu.md)
 
 ### Dynamic Pages
 
@@ -190,7 +190,7 @@ public function show($params)
         $this->response->setStatusCode(404);
         return $this->response->setContent('404 - Page not found');
     }
-    
+
     $html = $this->renderer->render('Page', $data);
     $this->response->setContent($html);
 }
@@ -202,4 +202,4 @@ Try a few different URLs to check that everything is working as it should. If so
 
 And as always, don't forget to commit your changes.
 
-[<< previous](09-templating.md) | [next >>](11-page-menu.md)
+[<< előző fejezet](09-templating.md) | [következő fejezet >>](11-page-menu.md)
