@@ -2,7 +2,7 @@
 
 ### A vezérlés megfordítása
 
-Az előző fejezetben létrehoztunk egy vezérlő osztályt, majd majd az `echo` parancs segítségével generáltunk egy sokatmondó "Hello world" kimenetet. Ne feledjük azonban, hogy van egy szép, objektumorientált HTTP absztrakciónk is, amit most még nem tudunk elérni a vezérlő osztályunkból.
+Az előző fejezetben létrehoztunk egy vezérlő osztályt, majd az `echo` parancs segítségével generáltunk egy sokatmondó "Hello world" kimenetet. Ne feledjük azonban, hogy van egy szép, objektumorientált [HTTP absztrakciónk](04-http.md) is, amit most még nem tudunk elérni a vezérlő osztályunkból.
 
 Az észszerű megoldás erre a [vezérlés megfordítása](https://hu.wikipedia.org/wiki/A_kontroll_megford%C3%ADt%C3%A1sa). Ez esetünkben azt jelenti, hogy az osztályunknak csak kérnie kell azokat az objektumokat, amelyekre szüksége van, ahelyett, hogy létrehozná őket. Ezt [függőség befecskendezéssel (dependency injection)](https://www.refaktor.hu/tiszta-kod-7-resz-mi-a-fene-az-a-dependency-injection-container/) tudjuk megvalósítani.
 
