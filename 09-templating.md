@@ -1,18 +1,22 @@
 [<< előző fejezet](08-dependency-injector.md) | [következő fejezet >>](10-dynamic-pages.md)
 
-### Templating
+### Sablonok
 
-A template engine is not necessary with PHP because the language itself can take care of that. But it can make things like escaping values easier. They also make it easier to draw a clear line between your application logic and the template files which should only put your variables into the HTML code.
+Mióta ember él a Földön, ádáz viták tárgyát képezi a sablonkezelők alkalmazása. A sablonmotor ugyanis nem feltétlenül szükséges egy PHP alkalmazáshoz, mivel maga a PHP is felfogható sablonnyelvként, így a tartalom és a megjelenés szétválasztása PHP-ban is egyszerűen megoldható. A sablonkezelő e mellett – ha nem is látványos mértékben, de – lassítja az alkalmazást, mivel adatainkat egy újabb rétegen kell átvonszolni.
 
-A good quick read on this is [ircmaxell on templating](http://blog.ircmaxell.com/2012/12/on-templating.html). Please also read [this](http://chadminick.com/articles/simple-php-template-engine.html) for a different opinion on the topic. Personally I don't have a strong opinion on the topic, so decide yourself which approach works better for you.
+Viszont nem vitás, hogy egy sablonmotor könnyebé teheti például a [védőkarakterek](https://hu.wikipedia.org/wiki/Felold%C3%B3jel_(informatika) használatát. E mellett alkalmazását elsősorban akkor érdemes fontolóra venni, ha
+- a design-t nem mi készítjük és a dizájnernek esetleg lövése sincs a PHP-ról,
+- várható, hogy gyakran változik a megjelenés,
+- zavarja a szemünk a HTML-kódban a sok `<?php echo $valtozo; ?>` vagy a [Zend Skeleton Applicationban](https://github.com/zendframework/ZendSkeletonApplication/blob/master/module/Application/view/layout/layout.phtml) is előszeretettel használt `<?= $valtozo ?>` ("rövid echo") vagy `<?= $this->printValami()` kifejezés,
+- tisztább határvonalat szeretnénk az alkalmazás-logika (PHP) és a megjelenítés (HTML) között.
 
-For this tutorial we will use a PHP implementation of [Mustache](https://github.com/bobthecow/mustache.php). So install that package before you continue (`composer require mustache/mustache`).
+Mivel a szerző szeretne hosszú és békés öregkort megérni, ezért nem foglal állást ebben a kardinális kérdésben, csupán ismerteti a szembeálló nézeteket, hogy az olvasó maga dönthesse el, melyik megoldást választja. Ebben segítségünkre lehet többek közt a Sinka Károly: [Template-kezelő rendszerek](https://blog.fps.hu/template-kezelo-rendszerek/) című írása, ahogy Nagy Krisztián: [PHP, mint sablonnyelv](https://deadlime.hu/2006/07/28/php-mint-sablonnyelv/) című munkája is.
 
-Another well known alternative would be [Twig](http://twig.sensiolabs.org/).
+Ezen útmutatóban a [Mustache](https://github.com/bobthecow/mustache.php) PHP-változatát fogjuk használni, tehát a folytatás előtt telepítsük ezt (parancssorban: `composer require mustache/mustache`).
 
-Now please go and have a look at the source code of the [engine class](https://github.com/bobthecow/mustache.php/blob/master/src/Mustache/Engine.php). As you can see, the class does not implement an interface.
+Egy jól ismert és széles körben alkalmazott alternatíva: [Twig](http://twig.sensiolabs.org/) (telepítés: `composer require "twig/twig:^2.0"`).
 
-You could just type hint against the concrete class. But the problem with this approach is that you create tight coupling.
+Ha vetünk egy pillantást a  [Mustache_Engine](https://github.com/bobthecow/mustache.php/blob/master/src/Mustache/Engine.php) osztályra. Az első, ami feltűnik, hogy nem valósít meg semmilyen interfészt. Csak type hintel egy-egy konkrét osztályt a szetterekben. Ezzel a megoldással az a probléma, hogy egy konkrét implementációhoz köti az alkalmazásunkat, így ellentmond a [függőség megfordítás elvének](https://reiteristvan.wordpress.com/2011/09/17/s-o-l-i-d-objektum-orientlt-tervezsi-elvek-5-dip/).
 
 In other words, all your code that uses the engine will be coupled to this mustache package. If you want to change the implementation you have a problem. Maybe you want to switch to Twig, maybe you want to write your own class or you want to add functionality to the engine. You can't do that without going back and changing all your code that is tightly coupled.
 
