@@ -16,7 +16,7 @@ Ezen útmutatóban a [Mustache](https://github.com/bobthecow/mustache.php) PHP-v
 
 Egy jól ismert és széles körben alkalmazott alternatíva: [Twig](http://twig.sensiolabs.org/) (telepítés: `composer require "twig/twig:^2.0"`).
 
-Ha vetünk egy pillantást a  [Mustache_Engine](https://github.com/bobthecow/mustache.php/blob/master/src/Mustache/Engine.php) osztályra. Az első, ami feltűnik, hogy nem valósít meg semmilyen interfészt. Csak type hintel egy-egy konkrét osztályt a szetterekben. Ezzel a megoldással az a probléma, hogy egy konkrét implementációhoz köti az alkalmazásunkat, így ellentmond a [függőség megfordítás elvének](https://reiteristvan.wordpress.com/2011/09/17/s-o-l-i-d-objektum-orientlt-tervezsi-elvek-5-dip/).
+Ha vetünk egy pillantást a  [Mustache_Engine](https://github.com/bobthecow/mustache.php/blob/master/src/Mustache/Engine.php) osztályra, az első, ami feltűnik, hogy nem valósít meg semmilyen interfészt. Csak type hintel egy-egy konkrét osztályt a szetterekben. Ezzel a megoldással az a probléma, hogy egy konkrét implementációhoz köti az alkalmazásunkat, így ellentmond a [függőség megfordítás elvének](https://reiteristvan.wordpress.com/2011/09/17/s-o-l-i-d-objektum-orientlt-tervezsi-elvek-5-dip/).
 
 In other words, all your code that uses the engine will be coupled to this mustache package. If you want to change the implementation you have a problem. Maybe you want to switch to Twig, maybe you want to write your own class or you want to add functionality to the engine. You can't do that without going back and changing all your code that is tightly coupled.
 
