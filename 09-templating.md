@@ -4,7 +4,7 @@
 
 Mióta ember él a Földön, ádáz viták tárgyát képezi a sablonkezelők alkalmazása. A sablonmotor ugyanis nem feltétlenül szükséges egy PHP alkalmazáshoz, mivel maga a PHP is felfogható sablonnyelvként, így a tartalom és a megjelenés szétválasztása PHP-ban is egyszerűen megoldható. A sablonkezelő e mellett – ha nem is látványos mértékben, de – lassítja az alkalmazást, mivel adatainkat egy újabb rétegen kell átvonszolni.
 
-Viszont nem vitás, hogy egy sablonmotor könnyebé teheti például a [védőkarakterek](https://hu.wikipedia.org/wiki/Felold%C3%B3jel_(informatika) használatát. E mellett alkalmazását elsősorban akkor érdemes fontolóra venni, ha
+Viszont nem vitás, hogy egy sablonmotor könnyebé teheti például a [védőkarakterek](https://hu.wikipedia.org/wiki/Felold%C3%B3jel_(informatika)) használatát. E mellett alkalmazását elsősorban akkor érdemes fontolóra venni, ha
 - a design-t nem mi készítjük és a dizájnernek esetleg lövése sincs a PHP-ról,
 - várható, hogy gyakran változik a megjelenés,
 - zavarja a szemünk a HTML-kódban a sok `<?php echo $valtozo; ?>` vagy a [Zend Skeleton Applicationban](https://github.com/zendframework/ZendSkeletonApplication/blob/master/module/Application/view/layout/layout.phtml) is előszeretettel használt `<?= $valtozo ?>` ("rövid echo") vagy `<?= $this->printValami()` kifejezés,
