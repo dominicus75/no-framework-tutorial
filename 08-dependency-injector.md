@@ -1,12 +1,12 @@
 [<< előző fejezet](07-inversion-of-control.md) | [következő fejezet >>](09-templating.md)
 
-### Dependency Injector
+### Függőség befecskendezés
 
-A dependency injector resolves the dependencies of your class and makes sure that the correct objects are injected when the class is instantiated.
+Egy Dependency Injection Container érzékeli a hívó (kliens) osztály függőségeit és gondoskodik róla, hogy a megfelelő, felparaméterezett szolgáltató objektumot fecskendezze be a kliens példányosításakor.
 
-There is only one injector that I can recommend: [Auryn](https://github.com/rdlowrey/Auryn). Sadly all the alternatives that I am aware of are using the [service locator antipattern](http://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) in their documentation and examples.
+Alkalmazásunkban az [Auryn](https://github.com/rdlowrey/Auryn) rekurzív függőség-injektort fogjuk alkalmazni, mert ennek fejlesztői mind a dokumentációban, mind a példaprogramokban tudatosan kerülik a sokak szerint ellenjavallt [Service Locator](https://hu.wikipedia.org/wiki/Szolg%C3%A1ltat%C3%A1slok%C3%A1tor) tervezési minta használatát. A Service Locatort azért tartják antipattern-nek mert elrejti a függőségeket és nem tudható, hogy adott kulcs alatt az a típusú szolgáltatás van-e tárolva, amire számítunk.
 
-Install the Auryn package and then create a new file called `Dependencies.php` in your `src/` folder. In there add the following content:
+Telepítsük tehát az Auryn csomagot a megszokott módon, majd hozzunk létre egy új állományt az `src/` könyvtárban, `Dependencies.php` néven. Ebben helyezzük el a következő kódot:
 
 ```php
 <?php declare(strict_types = 1);
@@ -29,13 +29,23 @@ $injector->share('Http\HttpResponse');
 return $injector;
 ```
 
-Make sure you understand what `alias`, `share` and `define` are doing before you continue. You can read about them in the [Auryn documentation](https://github.com/rdlowrey/Auryn).
+Mielőtt folytatnánk, vizsgáljuk meg, mit is csinál az Auryn `alias`, `share` és `define` metódusa (*magyarul nem találtam róla leírást, az angol nyelvű dokumentáció [itt](https://github.com/rdlowrey/auryn/blob/master/README.md) található, ebből szemezgettem Patrick Louys leírását kiegészítendő. – a fordító*).
 
-You are sharing the HTTP objects because there would not be much point in adding content to one object and then returning another one. So by sharing it you always get the same instance.
+A `share` metódus akkor hasznos, ha ugyan azt az objektumpéldányt szeretnénk az alkalmazás több rétegébe is befecskendezni, ezért nem szeretnénk minden egyes hívásnál másikat létrehozni, hanem a már meglévő megosztására utasítjuk az injektort. Tehát a megosztással végig ugyanaz a példány áll rendelkezésre.
 
-The alias allows you to type hint the interface instead of the class name. This makes it easy to switch the implementation without having to go back and edit all your classes that use the old implementation.
+Az `alias` lehetővé teszi, hogy a type hintelésnél osztálynév helyett az interfész nevét használhassuk. Első paramétere ezért az interfész neve, a második pedig az ezt implementáló osztály neve. A kettő egymáshoz rendelésével könnyebbé válik az ugyanazon interfészt megvalósító osztályok esetleges cseréje anélkül, hogy kódunkat más helyen módosítani kellene.
 
-Of course your `Bootstrap.php` will also need to be changed. Before you were setting up `$request` and `$response` with `new` calls. Switch that to the injector now so that we are using the same instance of those objects everywhere.
+A `define` metódussal tudjuk felparaméterezni a kért szolgáltatást. Első paraméterként a szolgáltatás nevét (amit az `alias` segítségével állítottunk be) várja szövegként (string), második paraméterként pedig egy tömböt, amely a szolgáltató objektum konstruktora által elvárt sorrendben tartalmazza annak paramétereit. A tömb kulcsainak neve elé tett kettőspont (pl. `:get`) azért kell, mert ennek elhagyásával az Auryn alapértelmezésben osztálynévként értelmezi őket.
+
+Ezek után természetesen a `Bootstrap.php` állományunkat is módosítanunk kell. Az eddig közvetlenül példányosított `$request` és `$response` objektumokat  most már az injektorunk fogja létrehozni. Ne feledjük, hogy mindkét objektum példányosítását úgy állítottuk be a `Dependencies.php` idevágó részében, hogy csak egy készüljön belőlük és így ugyanazt az objektumpéldányt használhassuk mindenhol.
+
+Keressük meg az alábbi kódrészt:
+
+```php
+$request = new \Http\HttpRequest($_GET, $_POST, $_COOKIE, $_FILES, $_SERVER);
+$response = new \Http\HttpResponse;
+```
+majd cseréljük ki erre:
 
 ```php
 $injector = include('Dependencies.php');
@@ -44,23 +54,21 @@ $request = $injector->make('Http\HttpRequest');
 $response = $injector->make('Http\HttpResponse');
 ```
 
-The other part that has to be changed is the dispatching of the route. Before you had the following code:
+Az injektor beüzemelése után az útvonal szerinti átirányítást is módosítanunk kell, ezért először keressük meg az alábbi kódrészt:
 
 ```php
 $class = new $className($response);
 $class->$method($vars);
 ```
 
-Change that to the following:
+majd cseréljük ki erre, hogy immár a vezérlőink példányosítását is az injektorra bízhassuk:
 
 ```php
 $class = $injector->make($className);
 $class->$method($vars);
 ```
 
-Now all your controller constructor dependencies will be automatically resolved with Auryn.
-
-Go back to your `Homepage` controller and change it to the following:
+A `Homepage` vezérlőnket pedig az alábbi kóddal módosítsuk:
 
 ```php
 <?php declare(strict_types = 1);
@@ -90,8 +98,6 @@ class Homepage
 }
 ```
 
-As you can see now the class has two dependencies. Try to access the page with a GET parameter like this `http://localhost:8000/?name=Arthur%20Dent`.
-
-Congratulations, you have now successfully laid the groundwork for your application.
+A `Homepage` vezérlőnknek most kettő függősége van, amelyek feloldásáért az Auryn lett a felelős. Próbáljuk meghívni a nyitólapot a következő GET paraméterekkel: `http://localhost:8000/?name=Arthur%20Dent`. Ha a `Hello World` és a `Hello Arthur Dent` kimenetet kapjuk, akkor minden a legnagyobb rendben, sikeresen lefektettük alkalmazásunk alapjait.
 
 [<< előző fejezet](07-inversion-of-control.md) | [következő fejezet >>](09-templating.md)
