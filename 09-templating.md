@@ -7,7 +7,7 @@ Mióta ember él a Földön, ádáz viták tárgyát képezi a sablonkezelők al
 Viszont nem vitás, hogy egy sablonmotor könnyebé teheti például a [védőkarakterek](https://hu.wikipedia.org/wiki/Felold%C3%B3jel_(informatika)) használatát. E mellett alkalmazását elsősorban akkor érdemes fontolóra venni, ha
 - a design-t nem mi készítjük és a dizájnernek esetleg lövése sincs a PHP-ról,
 - várható, hogy gyakran változik a megjelenés,
-- zavarja a szemünk a HTML-kódban a sok `<?php echo $valtozo; ?>` vagy a [Zend Skeleton Applicationban](https://github.com/zendframework/ZendSkeletonApplication/blob/master/module/Application/view/layout/layout.phtml) is előszeretettel használt `<?= $valtozo ?>` ("rövid echo") vagy `<?= $this->printValami()` kifejezés,
+- zavarja a szemünk a HTML-kódban a sok `<?php echo $valtozo; ?>` vagy a [Zend Skeleton Applicationban](https://github.com/zendframework/ZendSkeletonApplication/blob/master/module/Application/view/layout/layout.phtml) is előszeretettel használt `<?= $valtozo ?>` ("rövid echo") vagy `<?= $this->printValami() ?>` kifejezés,
 - tisztább határvonalat szeretnénk az alkalmazás-logika (PHP) és a megjelenítés (HTML) között.
 
 Mivel a szerző szeretne hosszú és békés öregkort megérni, ezért nem foglal állást ebben a kardinális kérdésben, csupán ismerteti a szembeálló nézeteket, hogy az olvasó maga dönthesse el, melyik megoldást választja. Ebben segítségünkre lehet többek közt a Sinka Károly: [Template-kezelő rendszerek](https://blog.fps.hu/template-kezelo-rendszerek/) című írása, ahogy Nagy Krisztián: [PHP, mint sablonnyelv](https://deadlime.hu/2006/07/28/php-mint-sablonnyelv/) című munkája is.
