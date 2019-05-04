@@ -142,6 +142,6 @@ Hello {{ name }}
 
 Visszatérve `Homepage` vezérlőnkhöz, keressük meg a `show` metódusban a renderelésért felelős sort (`$html = $this->renderer->render('Hello {{name}}', $data);`) és cseréljük ki erre: `$html = $this->renderer->render('Homepage', $data);`.
 
-Ha végeztünk, nyissuk meg a böngészőben a kezdőoldalt, hogy megbizonyosodjunk róla, minden megfelelően működik. Ha végeztünk, akkor ne felejtsünk el commitolni sem.
+Ha végeztünk, nyissuk meg a böngészőben a kezdőoldalt, hogy megbizonyosodjunk róla, minden megfelelően működik. Ha készen vagyunk, akkor ne felejtsünk el commitolni sem.
 
 [<< előző fejezet](08-dependency-injector.md) | [következő fejezet >>](10-dynamic-pages.md)
