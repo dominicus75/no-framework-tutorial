@@ -1,12 +1,12 @@
 [<< előző fejezet](09-templating.md) | [következő fejezet >>](11-page-menu.md)
 
-### Dynamic Pages
+### Dinamikus oldalak
 
-So far we only have a static page with not much functionality. Just having a hello world example is not very useful, so let's go beyond that and add some real functionality to our application.
+Eddig csupán egy minimális funkcionalitású statikus oldallal lettünk gazdagabbak. Lépjünk is túl a nem kimondottan fantáziadús hello world példán, és adjunk némi valódi funkcionalitást az alkalmazásunknak.
 
-Our first feature will be dynamic pages generated from [markdown](http://en.wikipedia.org/wiki/Markdown) files.
+Első funkciónk [markdown](https://szit.hu/doku.php?id=oktatas:web:markdown) állományokból történő dinamikus oldalak generálása lesz (* Fordítói megjegyzés: a szerző az **oldal** kifejezést a Drupalból vagy a WordPress-ből ismert [jelentéstartalommal](http://wphu.org/konyv/2-2-oldalak/) használja, tehát egy tartalomtípust ért alatta, nem úgy általában egy weboldalt*).
 
-Create a `Page` controller with the following content:
+Ehhez hozzuk létre a `Page` vezérlőt az alábbi tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
@@ -21,18 +21,18 @@ class Page
     }
 }
 ```
-Once you have done that, add a new route:
+Ha ezzel megvagyunk, adjunk hozzá egy új route-ot is az `src/Routes.php` állományban:
 
 ```php
 ['GET', '/{slug}', ['Example\Controllers\Page', 'show']],
 ```
 
-Now try and visit a few urls, for example `http://localhost:8000/test` and `http://localhost:8000/hello`. As you can see, the `Page` controller is called every time and the `$params` array receives the slug of the page.
+Most próbáljuk ki a művünket és hívjuk meg néhány tetszőlegesen kiválasztott url-el az alkalmazásunkat, például a `http://localhost:8000/test` vagy a `http://localhost:8000/hello` éppen megfelel. Amint láthatjuk, minden alkalommal a `Page` vezérlőt hívtuk meg, a `$params` tömbben átadva neki a az oldal "[szép url](http://webmestertanfolyam.hu/webmester-blog/szep-url-generalas)"-jét (* A fordító megjegyzése: az eredeti szövegben itt a **slug** kifejezés szerepel, aminek a jelentését – elterjedt fordítás hiányában – szép vagy keresőbarát url-ként lehet legjobban visszaadni, ha esetleg a Gugli Fordító által felajánlott **meztelen csiga** nem nyeri el a tetszésünket...*).
 
-So let's create a few pages to get started. We won't use a database yet, so create a new folder `pages` in the root folder of your project. In there add a few files with the file extensions `.md` and add some text to them. For example `page-one.md` with the content:
+Kezdetnek hozzunk létre néhány oldalt. Még nem fogunk adatbázist használni, ezért most létrehozunk egy új mappát a projektünk gyökerében, amit `pages`-nek fogunk hívni. Ebben a könyvtárban fogjuk elhelyezni az `.md` kiterjesztésű szöveges állományainkat, amelyek oldalaink tartalmát lesznek hivatva tárolni. Először hozzunk létre egy `page-one.md` elnevezésű fájlt, az alábbi kifejező tartalommal:
 
 ```
-This is a page.
+Ez itt egy oldal.
 ```
 
 Now we will have to write some code to read the proper file and display the content. It might seem tempting to just put all that code into the `Page` controller. But remember [Separation of Concerns](http://en.wikipedia.org/wiki/Separation_of_concerns). There is a good chance that we will need to read the pages in other places in the application as well (for example in an admin area).
@@ -200,6 +200,6 @@ Make sure that you use an `use` statement for the `InvalidPageException` at the 
 
 Try a few different URLs to check that everything is working as it should. If something is wrong, go back and debug it until it works.
 
-And as always, don't forget to commit your changes.
+Ahogy mindig, most se felejtsünk el commitolni!
 
 [<< előző fejezet](09-templating.md) | [következő fejezet >>](11-page-menu.md)
