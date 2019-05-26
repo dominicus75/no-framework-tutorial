@@ -15,10 +15,10 @@ namespace Example\Controllers;
 
 class Page
 {
-    public function show($params)
-    {
-        var_dump($params);
-    }
+  public function show($params)
+  {
+    var_dump($params);
+  }
 }
 ```
 Ha ezzel megvagyunk, adjunk hozzá egy új route-ot is az `src/Routes.php` állományban:
@@ -35,24 +35,24 @@ Kezdetnek hozzunk létre néhány oldalt. Még nem fogunk adatbázist használni
 Ez itt egy oldal.
 ```
 
-Now we will have to write some code to read the proper file and display the content. It might seem tempting to just put all that code into the `Page` controller. But remember [Separation of Concerns](http://en.wikipedia.org/wiki/Separation_of_concerns). There is a good chance that we will need to read the pages in other places in the application as well (for example in an admin area).
+Most meg kell még írnunk néhány kódot, hogy azokat a megfelelő fájl olvasni tudja a tartalom megjelenítéséhez. Csábítónak tűnhet beleönteni az összes kódot a `Page` vezérlőnkbe, de ne feledkezzünk meg a [vonatkozások szétválasztásáról (SoC)](http://www.clean-code-developer.hu/separation-of-concerns-soc/) sem. Jó esélyünk van ugyanis arra, hogy ezeket az oldalakat az alkalmazás más felületeiről (pl. admin) is olvasnunk vagy esetleg írnunk kell.
 
-So let's put that functionality into a separate class. There is a good chance that we might switch from files to a database later, so let's use an interface again to make our page reader decoupled from the actual implementation.
+Fentiekre figyelemmel helyezzük el a funkcionalitást egy külön osztályba. Később akár az is előfordulhat, hogy a most használt `.md`-fájlokról valamilyen adatbázisra váltunk, ezért nem árt, ha ide beszúrunk egy absztrakciós réteget (interfészt), hogy oldalolvasónkat leválasszuk az aktuális implementációról.
 
-In your 'src' folder, create a new folder `Page`. In there we will put all the page related classes. Add a new file in there called `PageReader.php` with this content:
+Az 'src' mappánkban hozzunk létre egy `Page` névre hallgató alkönyvtárat, ahol az oldalakkal kapcsolatos osztályokat fogjuk tartani. Ebben a mappában fogjuk elhelyezni a `PageReaderInterface.php` nevű állományunkat, az alábbi tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace Example\Page;
 
-interface PageReader
+interface PageReaderInterface
 {
-    public function readBySlug(string $slug) : string;
+  public function readBySlug(string $slug) : string;
 }
 ```
 
-For the implementation, create a `FilePageReader.php` file. The file will looks like this:
+A fenti interfészt az ugyanitt létrehozandó `FilePageReader.php` állományban fogjuk implementálni, ami valahogy így fog kinézni:
 
 ```php
 <?php declare(strict_types = 1);
@@ -61,57 +61,49 @@ namespace Example\Page;
 
 use InvalidArgumentException;
 
-class FilePageReader implements PageReader
+class FilePageReader implements PageReaderInterface
 {
-    private $pageFolder;
+  private $pageFolder;
 
-    public function __construct(string $pageFolder)
-    {
-        $this->pageFolder = $pageFolder;
-    }
+  public function __construct(string $pageFolder)
+  {
+    $this->pageFolder = $pageFolder;
+  }
 
-    public function readBySlug(string $slug) : string
-    {
-        return 'I am a placeholder';
-    }
+  public function readBySlug(string $slug) : string
+  {
+    return 'Én egy helyőrző vagyok.';
+  }
 }
 ```
 
-As you can see we are requiring the page folder path as a constructor argument. This makes the class flexible and if we decide to move files or write unit tests for the class, we can easily change the location with the constructor argument.
+Mint a fenti kódban látható, az oldalakat tartalmazó mappa (pageFolder) elérési útját a konstruktorban kell átadnunk. Ez a megoldás rugalmassá teszi az osztályunkat, mert ha később úgy döntünk, hogy áthelyezzük a fájlokat, vagy esetleg egységtesztet írunk az osztályhoz, könnyen tudunk alkalmazkodni a változásokhoz, a konstruktornak paraméterként átadott elérési út megváltoztatásával.
 
-You could also put the page related things into it's own package and reuse it in different applications. Because we are not tightly coupling things, things are very flexible.
+Az oldalhoz kapcsolódó (általános, nem alkalmazás-specifikus feladatot ellátó) osztályokat saját csomagba is lehet rendezni és különböző alkalmazásokhoz újrahasznosítani. Mivel ezek nem kapcsolódnak szorosan egymáshoz (csak egy absztrakciós rétegen keresztül), ezért könnyen lecserélhetők.
 
-This will do for now. Let's create a template file for our pages with the name `Page.html` in the `templates` folder. For now just add `{{ content }}` in there.
-
-Add the following to your `Dependencies.php` file so that the application know which implementation to inject for our new interface. We also define the the `pageFolder` there.
+Hozzunk létre egy `Page.html` nevű sablon-fájlt oldalainkhoz a `templates` könyvtárban, majd helyezzük el benne ezt a sort: `{{ content }}`. Ez után az `src/Dependencies.php` állományunkat egészítsük ki az alábbi kódrészlettel, hogy alkalmazásunk tudomására hozzuk, új interfészünk melyik implementációját akarjuk befecskendezni. Itt kell beállítanunk a `pageFolder` értékét is (a már ismert módon, a `define()` metódus használatával).
 
 ```php
-$injector->define('Example\Page\FilePageReader', [
-    ':pageFolder' => __DIR__ . '/../pages',
-]);
-
-$injector->alias('Example\Page\PageReader', 'Example\Page\FilePageReader');
+$injector->alias('Example\Page\PageReaderInterface', 'Example\Page\FilePageReader');
 $injector->share('Example\Page\FilePageReader');
+$injector->define('Example\Page\FilePageReader', [
+  ':pageFolder' => __DIR__ . '/../pages',
+]);
 ```
 
-
-Now go back to the `Page` controller and change the `show` method to the following:
+Ha mindezt megcselekedtük, akkor térjünk vissza a `Page` vezérlőnkhöz és módosítsuk annak `show` metódusát a következőképpen:
 
 ```php
 public function show($params)
 {
-    $slug = $params['slug'];
-    $data['content'] = $this->pageReader->readBySlug($slug);
-    $html = $this->renderer->render('Page', $data);
-    $this->response->setContent($html);
+  $slug = $params['slug'];
+  $data['content'] = $this->pageReader->readBySlug($slug);
+  $html = $this->renderer->render('Page', $data);
+  $this->response->setContent($html);
 }
 ```
 
-To make this work, we will need to inject a `Response`, `Renderer` and a `PageReader`. I will leave this to you as an exercise. Remember to `use` all the proper namespaces. Use the `Homepage` controller as a reference.
-
-Did you get everything to work?
-
-If not, this is how the beginning of your controller should look now:
+Befejezésként a konstruktoron keresztül be kell fecskendeznünk oldalkezelőnkbe a `Response`, a `Renderer` és a `PageReaderInterface` egy-egy korábban (a `src/Dependencies.php` állományban) beállított implementációját, a `Homepage` vezérlőben alkalmazottak szerint. Ha elkészültünk mindezzel, `Page` vezérlőnk eleje hasonlóan fog festeni:
 
 ```php
 <?php declare(strict_types = 1);
@@ -119,8 +111,9 @@ If not, this is how the beginning of your controller should look now:
 namespace Example\Controllers;
 
 use Http\Response;
-use Example\Template\Renderer;
-use Example\Page\PageReader;
+use Example\Template\MustacheRenderer;
+use Example\Page\PageReaderInterface;
+use Example\Page\InvalidPageException;
 
 class Page
 {
@@ -129,20 +122,20 @@ class Page
     private $pageReader;
 
     public function __construct(
-        Response $response,
-        Renderer $renderer,
-        PageReader $pageReader
+      Response $response,
+      Renderer $renderer,
+      PageReaderInterface $pageReader
     ) {
-        $this->response = $response;
-        $this->renderer = $renderer;
-        $this->pageReader = $pageReader;
+      $this->response = $response;
+      $this->renderer = $renderer;
+      $this->pageReader = $pageReader;
     }
 ...
 ```
 
-So far so good, now let's make our `FilePageReader` actually do some work.
+Ha eddig minden rendben, akkor most bírjuk `FilePageReader` osztályunkat tényleges munkára. Többek közt képesnek kell lennie arra is, hogy jelezze, ha egy kért oldal esetleg nem található. Ehhez (a beépített `Exception` osztály kibővítésével) létrehozhatunk egy egyéni kivételt, amelyet a hívó kódban majd elkaphatunk.
 
-We need to be able to communicate that a page was not found. For this we can create a custom exception that we can catch later. In your `src/Page` folder, create a `InvalidPageException.php` file with this content:
+Az `src/Page` mappában hozzuk is létre az `InvalidPageException.php` állományt a következő tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
@@ -153,52 +146,55 @@ use Exception;
 
 class InvalidPageException extends Exception
 {
-    public function __construct($slug, $code = 0, Exception $previous = null)
-    {
-        $message = "No page with the slug `$slug` was found";
-        parent::__construct($message, $code, $previous);
-    }
+  public function __construct($slug, $code = 0, Exception $previous = null)
+  {
+    $message = "No page with the slug `$slug` was found";
+    parent::__construct($message, $code, $previous);
+  }
 }
 ```
 
-Then in the `FilePageReader` file add this code at the end of your `readBySlug` method:
+Majd a `FilePageReader` osztály `readBySlug` metódusát cseréljük le erre:
 
 ```php
-$path = "$this->pageFolder/$slug.md";
+public function readBySlug(string $slug) : string
+{
 
-if (!file_exists($path)) {
+  $path = "$this->pageFolder/$slug.md";
+
+  if (!file_exists($path)) {
     throw new InvalidPageException($slug);
-}
+  }
 
-return file_get_contents($path);
+  return file_get_contents($path);
+
+}
 ```
 
-Now if you navigate to a page that does not exist, you should see an `InvalidPageException`. If a file exists, you should see the content.
+Ezután, ha olyan lapra navigálunk, ami történetesen nem létezik, akkor egy `InvalidPageException`-t kell kapnunk, létező lap esetén pedig annak tartalmát kellene látnunk, ha mindent jól csináltunk.
 
-Of course showing the user an exception for an invalid URL does not make sense. So let's catch the exception and show a 404 error instead.
+Természetesen annak, hogy az érvénytelen URL-t bepötyögő felhasználóknak különféle `Exception`-okat hajigálunk, nem sok értelme van. Ezért a `Page` vezérlőnkben kapjuk el a `readBySlug` metódus által dobott kivételt, és a felhasználónak már egy 404-es hibaoldalt mutassunk helyette.
 
-Go to your `Page` controller and refactor the `show` method so that it looks like this:
+Nyissuk meg tehát a `Page` vezérlőt és írjuk újra annak `show` metódusát az alábbiak szerint:
 
 ```php
 public function show($params)
 {
-    $slug = $params['slug'];
+  $slug = $params['slug'];
 
-    try {
-        $data['content'] = $this->pageReader->readBySlug($slug);
-    } catch (InvalidPageException $e) {
-        $this->response->setStatusCode(404);
-        return $this->response->setContent('404 - Page not found');
-    }
+  try {
+    $data['content'] = $this->pageReader->readBySlug($slug);
+  } catch (InvalidPageException $e) {
+    $this->response->setStatusCode(404);
+    return $this->response->setContent('404 - Page not found');
+  }
 
-    $html = $this->renderer->render('Page', $data);
-    $this->response->setContent($html);
+  $html = $this->renderer->render('Page', $data);
+  $this->response->setContent($html);
 }
 ```
 
-Make sure that you use an `use` statement for the `InvalidPageException` at the top of the file.
-
-Try a few different URLs to check that everything is working as it should. If something is wrong, go back and debug it until it works.
+Győződjünk meg róla, hogy a `use Example\Page\InvalidPageException` utasítás szerepel-e a `Page` vezérlő állomány felső részében, majd próbálkozzunk különféle URL-ek meghívásával, hogy meggyőződjünk róla: művünk helyesen működik. Ha nem, akkor irány bogarászni...
 
 Ahogy mindig, most se felejtsünk el commitolni!
 
