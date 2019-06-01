@@ -111,7 +111,7 @@ Befejezésként a konstruktoron keresztül be kell fecskendeznünk oldalkezelőn
 namespace Example\Controllers;
 
 use Http\Response;
-use Example\Template\MustacheRenderer;
+use Example\Template\RendererInterface;
 use Example\Page\PageReaderInterface;
 use Example\Page\InvalidPageException;
 
@@ -123,7 +123,7 @@ class Page
 
     public function __construct(
       Response $response,
-      Renderer $renderer,
+      RendererInterface $renderer,
       PageReaderInterface $pageReader
     ) {
       $this->response = $response;

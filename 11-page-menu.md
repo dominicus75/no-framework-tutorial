@@ -114,7 +114,7 @@ The problem is that we are only passing the `menuItems` to the homepage. Doing t
 
 We could create a global variable that is usable by all templates, but that is not a good idea here. We will add different parts of the site in the future like an admin area and we will have a different menu there.
 
-So instead we will use a custom renderer for the frontend. First we create an empty interface that extends the existing `Renderer` interface.
+So instead we will use a custom renderer for the frontend. First we create an empty interface that extends the existing `RendererInterface` interface.
 
 ```php
 <?php declare(strict_types = 1);
@@ -124,7 +124,7 @@ namespace Example\Template;
 interface FrontendRenderer extends RendererInterface {}
 ```
 
-By extending it we are saying that any class implementing the `FrontendRenderer` interface can be used where a `Renderer` is required. But not the other way around, because the `FrontendRenderer` can have more functionality as long as it still fulfills the `Renderer` interface.
+By extending it we are saying that any class implementing the `FrontendRenderer` interface can be used where a `RendererInterface` is required. But not the other way around, because the `FrontendRenderer` can have more functionality as long as it still fulfills the `RendererInterface` interface.
 
 Now of course we also need a class that implements the new interface.
 
@@ -138,7 +138,7 @@ class FrontendTwigRenderer implements FrontendRenderer
 {
   private $renderer;
 
-  public function __construct(Renderer $renderer)
+  public function __construct(RendererInterface $renderer)
   {
     $this->renderer = $renderer;
   }
@@ -153,7 +153,7 @@ class FrontendTwigRenderer implements FrontendRenderer
 }
 ```
 
-As you can see we have a dependency on a `Renderer` in this class. This class is a wrapper for our `Renderer` and adds the `menuItems` to all `$data` arrays.
+As you can see we have a dependency on a `RendererInterface` in this class. This class is a wrapper for our `RendererInterface` and adds the `menuItems` to all `$data` arrays.
 
 Of course we also need to add another alias to the dependencies file.
 
@@ -161,7 +161,7 @@ Of course we also need to add another alias to the dependencies file.
 $injector->alias('Example\Template\FrontendRenderer', 'Example\Template\FrontendTwigRenderer');
 ```
 
-Now go to your controllers and exchange all references of `Renderer` with `FrontendRenderer`. Make sure you change it in both the `use` statement at the top and in the constructor.
+Now go to your controllers and exchange all references of `RendererInterface` with `FrontendRenderer`. Make sure you change it in both the `use` statement at the top and in the constructor.
 
 Also delete the following line from the `Homepage` controller:
 
