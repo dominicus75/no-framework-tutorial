@@ -46,9 +46,9 @@ Mint látható, a `render` metódusban (a `MustacheRenderer` azonos nevű metód
 Egészítsük ki a `Dependencies.php` állományunkat a következő kóddal:
 
 ```php
-$injector->delegate('Twig_Environment', function () use ($injector) {
-  $loader = new Twig_Loader_Filesystem(dirname(__DIR__) . '/templates');
-  $twig = new Twig_Environment($loader);
+$injector->delegate('Twig\Environment', function () use ($injector) {
+  $loader = new Twig\Loader\FilesystemLoader(dirname(__DIR__) . '/templates');
+  $twig = new Twig\Environment($loader);
   return $twig;
 });
 ```
@@ -64,7 +64,7 @@ Először is küldjünk egy adattömböt a sablonunknak. Ehhez nyissuk meg a `Ho
 ```php
 $data = [
   'name' => $this->request->getParameter('name', 'stranger'),
-  'menuItems' => [['href' => '/', 'text' => 'Homepage']],
+  'menuItems' => [['href' => '/', 'text' => 'Kezdőlap']],
 ];
 ```
 
