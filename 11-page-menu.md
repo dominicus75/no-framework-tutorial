@@ -14,7 +14,7 @@ Talán most csodálkozik a nyájas olvasó, hogy ha ezt eddig is tudtuk, akkor m
 
 Emlékszünk még, hogyan hoztuk létre a `MustacheRenderer`-t a [9. fejezetben](09-templating.md)? Most hasonlóan fogjuk megalkotni a `TwigRenderer`-t, ami ugyanazt a `RendererInterface`-t fogja megvalósítani, ezért csereszabatos lesz a `MustacheRenderer` osztállyal.
 
-Mielőtt hozzálátnánk, telepítsük a Twig legújabb változatát a Composer segítségével (`composer require "twig/twig:~2.0"`).
+Mielőtt hozzálátnánk, telepítsük a Twig legújabb változatát a Composer segítségével (`composer require "twig/twig:~1.0"`).
 
 Ezután hozzuk létre a `TwigRenderer.php` állományt az `src/Template` mappánkban, a következő tartalommal:
 
@@ -47,7 +47,7 @@ Egészítsük ki a `Dependencies.php` állományunkat a következő kóddal:
 
 ```php
 $injector->delegate('Twig_Environment', function () use ($injector) {
-  $loader = new Twig_Loader_FilesystemLoader(dirname(__DIR__) . '/templates');
+  $loader = new Twig_Loader_Filesystem(dirname(__DIR__) . '/templates');
   $twig = new Twig_Environment($loader);
   return $twig;
 });
