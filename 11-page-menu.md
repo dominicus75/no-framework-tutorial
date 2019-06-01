@@ -1,24 +1,22 @@
 [<< előző fejezet](10-dynamic-pages.md) | [következő fejezet >>](12-frontend.md)
 
-### Page Menu
+### Navigációs menü
 
-Now we have made a few nice dynamic pages. But nobody can find them.
+Az előző fejezetben elkészítettünk néhány dinamikus oldalt, viszont senki sem találja őket. Ezt a problémát fogjuk most orvosolni. Ebben a fejezetben ugyanis olyan menüt fogunk készíteni, amely tartalmazza minden oldalunk linkjét.
 
-Let's fix that now. In this chapter we will create a menu with links to all of our pages.
+Ha van egy ilyen menünk, nyilván azt szeretnénk, hogy fel tudjuk használni a kódját az összes oldalunkon. Elhelyezhetjük például egy különálló fájlban, hogy azt illeszthessük majd minden oldalunkba. Ennél azonban van jobb megoldás is.
 
-When we have a menu, we will want to be able to reuse the same code on multiple pages. We could create a separate file and include it every time, but there is a better solution.
+Praktikusabb, ha olyan sablonokat használunk, amelyek képesek más sablonok képességeinek kibővítésére. Így az elrendezéssel kapcsolatos összes kódot egyetlen állományban tudhatjuk és nem kell a header és footer fájlokat minden sablonba egyenként beillesztenünk.
 
-It is more practical to have templates that are able to extend other templates, like a layout for example. Then we can have all the layout related code in a single file and we don't have to include header and footer files in every template.
+Ezt a megoldást viszont Mustache-implementációnk nem támogatja. Át tudnánk írni a kódunkat úgy, hogy ezt elhárítsuk, viszont ez egyrészt időbe kerülne, másrészt a hibalehetőségek is megszaporodnának. Mindezt elkerülendő átválthatunk egy olyan csomagra is, amelyik támogatja ezt és emellett megfelelően ki van próbálva, mint például a [Twig](http://twig.sensiolabs.org/).
 
-Our implementation of mustache does not support this. We could write code to work around this, which will take time and could introduce some bugs. Or we could switch to a library that already supports this and is well tested. [Twig](http://twig.sensiolabs.org/) for example.
+Talán most csodálkozik a nyájas olvasó, hogy ha ezt eddig is tudtuk, akkor miért nem mindjárt a Twig-et használjuk. A válasz pedagógiai természetű: esetünk remek példa arra, miért hasznos az interfészek használata és az egymáshoz lazán kapcsolódó osztályok írása. A való világhoz hasonlóan a körülmények váratlan hirtelenséggel változhatnak, s kódunknak ehhez alkalmazkodnia kell.
 
-Now you might wonder why we didn't start with Twig right away. Because this is a good example to show why using interfaces and writing loosely-coupled code is a good idea. Like in the real world, the requirements suddenly changed and now our code needs to adapt.
+Emlékszünk még, hogyan hoztuk létre a `MustacheRenderer`-t a [9. fejezetben](09-templating.md)? Most hasonlóan fogjuk megalkotni a `TwigRenderer`-t, ami ugyanazt a `RendererInterface`-t fogja megvalósítani, ezért csereszabatos lesz a `MustacheRenderer` osztállyal.
 
-Remember how you created a `MustacheRenderer` in [chapter 9](09-templating.md)? This time, we create a `TwigRenderer` that implements the same interface.
+Mielőtt hozzálátnánk, telepítsük a Twig legújabb változatát a Composer segítségével (`composer require "twig/twig:~2.0"`).
 
-But before we start, install the latest version of Twig with composer (`composer require "twig/twig:~1.0"`).
-
-Then create the a `TwigRenderer.php` in your `src/Template` folder that looks like this:
+Ezután hozzuk létre a `TwigRenderer.php` állományt az `src/Template` mappánkban, a következő tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
@@ -27,94 +25,90 @@ namespace Example\Template;
 
 use Twig_Environment;
 
-class TwigRenderer implements Renderer
+class TwigRenderer implements RendererInterface
 {
-    private $renderer;
+  private $renderer;
 
-    public function __construct(Twig_Environment $renderer)
-    {
-        $this->renderer = $renderer;
-    }
+  public function __construct(Twig_Environment $renderer)
+  {
+    $this->renderer = $renderer;
+  }
 
-    public function render($template, $data = []) : string
-    {
-        return $this->renderer->render("$template.html", $data);
-    }
+  public function render($template, $data = []) : string
+  {
+    return $this->renderer->render("$template.html", $data);
+  }
 }
 ```
 
-As you can see, on the render function call a `.html` is added. This is because Twig does not add a file ending by default and you would have to specifiy it on every call otherwise. By doing it like this, you can use it in the same way as you used Mustache.
+Mint látható, a `render` metódusban (a `MustacheRenderer` azonos nevű metódusától eltérően) a `.html` kiterjesztést is külön feltüntettük. Erre azért van szükség, mert a Twig alapértelmezésben nem rendel a sablonhoz fájlkiterjesztést, így ezt nekünk kell minden esetben megtennünk. Ezzel a módszerrel ugyanúgy tudjuk használni, mint a Mustache csomagot.
 
-Add the following code to your `Dependencies.php` file:
+Egészítsük ki a `Dependencies.php` állományunkat a következő kóddal:
 
 ```php
 $injector->delegate('Twig_Environment', function () use ($injector) {
-    $loader = new Twig_Loader_Filesystem(dirname(__DIR__) . '/templates');
-    $twig = new Twig_Environment($loader);
-    return $twig;
+  $loader = new Twig_Loader_FilesystemLoader(dirname(__DIR__) . '/templates');
+  $twig = new Twig_Environment($loader);
+  return $twig;
 });
 ```
 
-Instead of just defining the dependencies, we are using a delegate to give the responsibility to create the class to a function. This will be useful in the future.
+Ahelyett, hogy az eddig megszokott `define()` metódus segítségével meghatároznánk a függőségeket, ebben a példában a `delegate()` meghívásával egy anonim függvénynek fogjuk átadni a kért osztály létrehozásának feladatát. A jövőben ez még hasznos lesz számunkra.
 
-Now you can switch the `Renderer` alias from `MustacheRenderer` to `TwigRenderer`. Now by default Twig will be used instead of Mustache.
+Most már lecserélhetjük a `RendererInterface`-hez rendelt `MustacheRenderer` implementációt a `TwigRenderer` osztályunkra, hogy ezt használhassuk a Mustache helyett.
 
-If you have a look at the site in your browser, everything should work now as before. Now let's get started with the actual menu.
+Ha megnézzük a webhelyünket a böngészőben, akkor mindennek úgy kell működnie, mint azelőtt. Ha ez így van, akkor hozzá is kezdhetünk a menü elkészítéséhez.
 
-To start we will just send a hardcoded array to the template. Go to you `Homepage` controller and change your `$data` array to this:
+Először is küldjünk egy adattömböt a sablonunknak. Ehhez nyissuk meg a `Homepage` vezérlőnket és cseréljük ki a `$data` tömb tartalmát a következőre:
 
 ```php
 $data = [
-    'name' => $this->request->getParameter('name', 'stranger'),
-    'menuItems' => [['href' => '/', 'text' => 'Homepage']],
+  'name' => $this->request->getParameter('name', 'stranger'),
+  'menuItems' => [['href' => '/', 'text' => 'Homepage']],
 ];
 ```
 
-At the top of your `Homepage.html` file add this code:
+Majd a `templates/Homepage.html` elejére szúrjuk be az alábbi kódot:
 
 ```php
 {% for item in menuItems %}
-    <a href="{{ item.href }}">{{ item.text }}</a><br>
+  <a href="{{ item.href }}">{{ item.text }}</a><br>
 {% endfor %}
 ```
 
-Now if you refresh the homepage in the browser, you should see a link.
+Ha ezután frissítjük a nyitólapunkat a böngészőben, látnunk kell az imént beállított hivatkozást is. A menünk tehát már működik a nyitólapon, viszont mi az összes oldalon látni szeretnénk. Át is másolhatnánk az összes sablon-állományunkba, de ha ezután valamit meg akarunk változtatni, akkor azt az összes kapcsolódó állományban meg kell tennünk.
 
-The menu works on the homepage, but we want it on all our pages. We could copy it over to all the template files, but that would be a bad idea. Then if something changes, you would have to go change all the files.
-
-So instead we are going to use a layout that can be used by all the templates.
-
-Create a `Layout.html` in your `templates` folder with the following content:
+Ez nem tűnik túl jó ötletnek. Ehelyett egy olyan elrendezés-sablont fogunk használni, amelyhez az összes sablon alkalmazkodhat. Hozzuk is létre a `Layout.html` állományt a `templates` könyvtárba, az alábbi tartalommal:
 
 ```php
 {% for item in menuItems %}
-    <a href="{{ item['href'] }}">{{ item['text'] }}</a><br>
+  <a href="{{ item['href'] }}">{{ item['text'] }}</a><br>
 {% endfor %}
 <hr>
 {% block content %}
 {% endblock %}
 ```
 
-Then change your `Homepage.html` to this:
+Ezután ugyanitt cseréljük le `Homepage.html` állományunk tartalmát az alábbiakra:
 
 ```php
 {% extends "Layout.html" %}
 {% block content %}
-    <h1>Hello World</h1>
-    Hello {{ name }}
+  <h1>Hello World</h1>
+  Hello {{ name }}
 {% endblock %}
 ```
 
-And your `Page.html` to this:
+Majd a `Page.html` tartalmát erre:
 
 ```php
 {% extends "Layout.html" %}
 {% block content %}
-    {{ content }}
+  {{ content }}
 {% endblock %}
 ```
 
-If you refresh your homepage now, you should see the menu. But if you go to a subpage, the menu is not there but the `<hr>` line is.
+Ha ráfrissítünk a nyitólapra a böngészőben, akkor látnunk kell a menüt. Viszont ha egy aloldalra navigálunk, akkor a menü helyett csak egy `<hr>` sor lesz látható.
 
 The problem is that we are only passing the `menuItems` to the homepage. Doing that over and over again for all pages would be a bit tedious and a lot of work if something changes. So let's fix that in the next step.
 
@@ -127,7 +121,7 @@ So instead we will use a custom renderer for the frontend. First we create an em
 
 namespace Example\Template;
 
-interface FrontendRenderer extends Renderer {}
+interface FrontendRenderer extends RendererInterface {}
 ```
 
 By extending it we are saying that any class implementing the `FrontendRenderer` interface can be used where a `Renderer` is required. But not the other way around, because the `FrontendRenderer` can have more functionality as long as it still fulfills the `Renderer` interface.
@@ -142,20 +136,20 @@ namespace Example\Template;
 
 class FrontendTwigRenderer implements FrontendRenderer
 {
-    private $renderer;
+  private $renderer;
 
-    public function __construct(Renderer $renderer)
-    {
-        $this->renderer = $renderer;
-    }
+  public function __construct(Renderer $renderer)
+  {
+    $this->renderer = $renderer;
+  }
 
-    public function render($template, $data = []) : string
-    {
-        $data = array_merge($data, [
-            'menuItems' => [['href' => '/', 'text' => 'Homepage']],
-        ]);
-        return $this->renderer->render($template, $data);
-    }
+  public function render($template, $data = []) : string
+  {
+    $data = array_merge($data, [
+      'menuItems' => [['href' => '/', 'text' => 'Homepage']],
+    ]);
+    return $this->renderer->render($template, $data);
+  }
 }
 ```
 
@@ -190,7 +184,7 @@ namespace Example\Menu;
 
 interface MenuReader
 {
-    public function readMenu() : array;
+  public function readMenu() : array;
 }
 ```
 
@@ -203,12 +197,12 @@ namespace Example\Menu;
 
 class ArrayMenuReader implements MenuReader
 {
-    public function readMenu() : array
-    {
-        return [
-            ['href' => '/', 'text' => 'Homepage'],
-        ];
-    }
+  public function readMenu() : array
+  {
+    return [
+      ['href' => '/', 'text' => 'Homepage'],
+    ];
+  }
 }
 ```
 
@@ -236,25 +230,25 @@ use Example\Menu\MenuReader;
 
 class FrontendTwigRenderer implements FrontendRenderer
 {
-    private $renderer;
-    private $menuReader;
+  private $renderer;
+  private $menuReader;
 
-    public function __construct(Renderer $renderer, MenuReader $menuReader)
-    {
-        $this->renderer = $renderer;
-        $this->menuReader = $menuReader;
-    }
+  public function __construct(RendererInterface $renderer, MenuReader $menuReader)
+  {
+    $this->renderer = $renderer;
+    $this->menuReader = $menuReader;
+  }
 
-    public function render($template, $data = []) : string
-    {
-        $data = array_merge($data, [
-            'menuItems' => $this->menuReader->readMenu(),
-        ]);
-        return $this->renderer->render($template, $data);
-    }
+  public function render($template, $data = []) : string
+  {
+    $data = array_merge($data, [
+      'menuItems' => $this->menuReader->readMenu(),
+    ]);
+    return $this->renderer->render($template, $data);
+  }
 }
 ```
 
-Everything still working? Awesome. Commit everything and move on to the next chapter.
+Még mindig működik? Remek. Akkor ne felejtsünk el commitolni, mielőtt továbblépnénk a következő fejezetre.
 
 [<< előző fejezet](10-dynamic-pages.md) | [következő fejezet >>](12-frontend.md)
