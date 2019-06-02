@@ -110,23 +110,26 @@ Majd a `Page.html` tartalmát erre:
 
 Ha ráfrissítünk a nyitólapra a böngészőben, akkor látnunk kell a menüt. Viszont ha egy aloldalra navigálunk, akkor a menü helyett csak egy `<hr>` sor lesz látható.
 
-The problem is that we are only passing the `menuItems` to the homepage. Doing that over and over again for all pages would be a bit tedious and a lot of work if something changes. So let's fix that in the next step.
+A probléma az, hogy csupán a `Homepage` vezérlőben létrehozott `menuItems` tömb elemeit írtuk ki és azokat is csak a nyitólapra. Létrehozhatnánk ezt a tömböt minden más vezérlőben is (pl. `Page`), ahol az ezt is tartalmazó `$data` tömböt használjuk, de ez nagyon macerás lenne és nem is oldaná meg a problémánkat, mivel ezt a későbbiekben minden változtatás esetén újra és újra végig kellene zongorázni az összes vezérlőnkön.
 
-We could create a global variable that is usable by all templates, but that is not a good idea here. We will add different parts of the site in the future like an admin area and we will have a different menu there.
+Valami jobbat kell kitalálnunk, olyat amivel nem csinálunk magunknak fölösleges pluszmunkát a későbbiekben.
 
-So instead we will use a custom renderer for the frontend. First we create an empty interface that extends the existing `RendererInterface` interface.
+Létrehozhatunk akár egy globális változót, amelyet az összes sablon használhat, de itt ez sem tűnik túl jó ötletnek. Később ugyanis újabb részeket hozhatunk létre a webhelyhez, mondjuk egy adminisztrációs felületet, s ez valószínűleg egy külön menüvel fog rendelkezni.
+
+Ehelyett egy külön megjelenítőt fogunk használni a frontendhez. Először egy üres interfészt hozunk létre, amelyet a  már létező `RendererInterface`-ből fogunk leörökíteni az alábbiak szerint:
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace Example\Template;
 
-interface FrontendRenderer extends RendererInterface {}
+interface FrontendRendererInteface extends RendererInterface {}
+
 ```
 
-By extending it we are saying that any class implementing the `FrontendRenderer` interface can be used where a `RendererInterface` is required. But not the other way around, because the `FrontendRenderer` can have more functionality as long as it still fulfills the `RendererInterface` interface.
+A `RendererInterface` kiterjesztésével deklaráljuk, hogy bármely olyan osztály, amely implementálja a `FrontendRendererInteface`-t használható ott, ahol a `RendererInterface` van megkövetelve. De mindez megfordítva nem működik, mert a `FrontendRendererInteface` (mint leszármazott, elméletileg) több funkcionalitással bír, amellett, hogy örökli a `RendererInterface` metódusait is. Ez a megoldás a későbbiekben azért lehet hasznos, mert a `FrontendRendererInteface`-t úgy tudjuk új, frontend-specifikus metódusokkal bővíteni (akár leszármaztatással is), hogy az általánosabb feladatú `RendererInterface`-hez nem nyúlunk, ezért az azt implementáló osztályainkhoz sem kell (jusson itt eszünkbe az Interface elválasztási elv is).
 
-Now of course we also need a class that implements the new interface.
+Most természetesen szükségünk lesz egy osztályra is, amelyik implementálja az új interfészünket. Íme:
 
 
 ```php
@@ -134,7 +137,7 @@ Now of course we also need a class that implements the new interface.
 
 namespace Example\Template;
 
-class FrontendTwigRenderer implements FrontendRenderer
+class FrontendTwigRenderer implements FrontendRendererInteface
 {
   private $renderer;
 
@@ -153,25 +156,25 @@ class FrontendTwigRenderer implements FrontendRenderer
 }
 ```
 
-As you can see we have a dependency on a `RendererInterface` in this class. This class is a wrapper for our `RendererInterface` and adds the `menuItems` to all `$data` arrays.
+Ahogy a kódból is kitűnik, osztályunk rendelkezik egy `RendererInterface` függőséggel. Ezért ez az osztály egy burkoló (közkeletűbb nevén: wrapper) lesz a `RendererInterface`-hez, a feladata pedig az, hogy minden `$data` tömbhöz hozzáadja a `menuItems` elemet a megadott tartalommal.
 
-Of course we also need to add another alias to the dependencies file.
+Természetesen a fenti változásokat a `src/Dependencies.php` állományban is meg kell örökítenünk:
 
 ```php
-$injector->alias('Example\Template\FrontendRenderer', 'Example\Template\FrontendTwigRenderer');
+$injector->alias('Example\Template\FrontendRendererInteface', 'Example\Template\FrontendTwigRenderer');
 ```
 
-Now go to your controllers and exchange all references of `RendererInterface` with `FrontendRenderer`. Make sure you change it in both the `use` statement at the top and in the constructor.
+Ezután az összes vezérlőnkben (`Homepage.php` és `Page.php`) le kell cserélnünk a `RendererInterface`-re való hivatkozásokat a `FrontendRendererInteface`-re. Győződjünk meg arról is, hogy mind a `use` kifejezésben, mind a konstruktorban a `FrontendRendererInteface` szerepeljen az eddigi `RendererInterface` helyett.
 
-Also delete the following line from the `Homepage` controller:
+Majd szintén töröljük a következő sort a `Homepage` vezérlőből (a `show` metódusban), mivel ezt a műveletet már a `FrontendTwigRenderer` osztályunk azonos nevű metódusa fogja elvégezni:
 
 ```php
 'menuItems' => [['href' => '/', 'text' => 'Homepage']],
 ```
 
-Once that is done, you should see the menu on both the homepage and your subpages.
+Ha mindezzel kész vagyunk, akkor a menüt immár a nyitólapon és az aloldalakon (pl. `/one-page`) is látnunk kell(ene).
 
-Everything should work now, but it doesn't really make sense that the menu is defined in the `FrontendTwigRenderer`. So let's refactor that and move it into it's own class.
+Ugyan most már mindennek működnie kell, de igazából még sincs túl sok értelme, hogy a menüt a `FrontendTwigRenderer` osztályban hozzuk létre (a vezérlők helyett). Helyezzük is át egy saját osztályba!
 
 Right now the menu is defined in the array, but it is very likely that this will change in the future. Maybe you want to define it in the database or maybe you even want to generate it dynamically based on the pages available. We don't have this information and things might change in the future.
 
@@ -228,7 +231,7 @@ namespace Example\Template;
 
 use Example\Menu\MenuReader;
 
-class FrontendTwigRenderer implements FrontendRenderer
+class FrontendTwigRenderer implements FrontendRendererInteface
 {
   private $renderer;
   private $menuReader;
