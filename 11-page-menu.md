@@ -176,29 +176,29 @@ Ha mindezzel kész vagyunk, akkor a menüt immár a nyitólapon és az aloldalak
 
 Ugyan most már mindennek működnie kell, de igazából még sincs túl sok értelme, hogy a menüt a `FrontendTwigRenderer` osztályban hozzuk létre (a vezérlők helyett). Helyezzük is át egy saját osztályba!
 
-Right now the menu is defined in the array, but it is very likely that this will change in the future. Maybe you want to define it in the database or maybe you even want to generate it dynamically based on the pages available. We don't have this information and things might change in the future.
+Jelenleg a menünket egy tömbben helyeztük el, de nagyon valószínű, hogy ez a későbbiekben változni fog. Lehet, hogy majdan egy adatbázisból szeretnénk kiolvasni, de az is előfordulhat, hogy az elérhető oldalak alapján dinamikusan akarjuk létrehozni. Ezt előre nem tudhatjuk, az alkalmazással szemben támasztott igények viszont változhatnak a jövőben.
 
-So let's do the right thing here and start with an interface again. But first, create a new folder in the `src` directory for the menu related things. `Menu` sounds like a reasonable name, doesn't it?
+Fussunk neki még egyszer és kezdjük ismét egy új interfésszel. Mielőtt hozzáfognánk, hozzunk létre egy új mappát az `src` könyvtárban, ahol a menükkel kapcsolatos dolgainkat fogjuk tárolni. A mappa neve legyen mondjuk `Menu`. Első lakója a `MenuReaderInterface.php` lesz, az alábbi tartalommal:
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace Example\Menu;
 
-interface MenuReader
+interface MenuReaderInterface
 {
   public function readMenu() : array;
 }
 ```
 
-And our very simple implementation will look like this:
+Újdonsült interfészünk faék egyszerűségű implementációja pedig a következő lesz:
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace Example\Menu;
 
-class ArrayMenuReader implements MenuReader
+class ArrayMenuReader implements MenuReaderInterface
 {
   public function readMenu() : array
   {
@@ -209,34 +209,32 @@ class ArrayMenuReader implements MenuReader
 }
 ```
 
-This is only a temporary solution to keep things moving forward. We are going to revisit this later.
+Ez azonban csak egy ideiglenes megoldás lesz, amit később felül fogunk vizsgálni, hogy nyomon tudjuk követni a logikát, amely a tényleges megoldást fogja eredményezni.
 
-Before we continue, let's edit the dependencies file to make sure that our application knows which implementation to use when the interface is requested.
+Mielőtt folytatnánk, egészítsük ki az `src/Dependencies.php`-t, hogy biztosak lehessünk benne, alkalmazásunk tudja melyik implementációt kell használnia az interfészre való hivatkozáskor.
 
-Add these lines above the `return` statement:
+Adjuk hozzá az alábbi sorokat a `return` kifejezés fölött:
 
 ```php
-$injector->alias('Example\Menu\MenuReader', 'Example\Menu\ArrayMenuReader');
+$injector->alias('Example\Menu\MenuReaderInterface', 'Example\Menu\ArrayMenuReader');
 $injector->share('Example\Menu\ArrayMenuReader');
 ```
 
-Now you need to change out the hardcoded array in the `FrontendTwigRenderer` class to make it use our new `MenuReader` instead. Give it a try without looking at the solution below.
-
-Did you finish it or did you get stuck? Or are you just lazy? Doesn't matter, here is a working solution:
+Most ki kell cserélnünk a `FrontendTwigRenderer` osztály `render` metódusában található tömböt az új `MenuReaderInterface`-t megvalósító osztályunk megfelelő metódusára. Tegyünk néhány próbát anélkül, hogy az alant feltüntetett megoldásból puskáznánk.
 
 ```php
 <?php declare(strict_types = 1);
 
 namespace Example\Template;
 
-use Example\Menu\MenuReader;
+use Example\Menu\MenuReaderInterface;
 
 class FrontendTwigRenderer implements FrontendRendererInteface
 {
   private $renderer;
   private $menuReader;
 
-  public function __construct(RendererInterface $renderer, MenuReader $menuReader)
+  public function __construct(RendererInterface $renderer, MenuReaderInterface $menuReader)
   {
     $this->renderer = $renderer;
     $this->menuReader = $menuReader;
