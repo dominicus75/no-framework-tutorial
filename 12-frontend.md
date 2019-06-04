@@ -177,7 +177,7 @@ Ha a továbbiakban újabb nyilvánosan elérhető fájlokat (pl. az oldalon megj
 
 Eddig minden szép és jó (esetleg még működik is), viszont a látogatóink még nem látják, melyik oldalon is tartózkodnak éppen. Ehhez természetesen több menüelemre lesz szükségünk. Mi most a korábban létrehozott `pages/page-one.md` állományt fogjuk használni szemléltetés gyanánt, de bátran hozzáadhatunk újabb lapokat is.
 
-Ezeket az `ArrayMenuReader` osztályban adhatjuk hozzá a `$data` tömbhöz tömbhöz:
+Ezeket az `ArrayMenuReader` osztályban adhatjuk hozzá a `$data` tömbhöz az alábbiak szerint:
 
 ```php
 return [
