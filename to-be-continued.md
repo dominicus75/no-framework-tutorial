@@ -1,17 +1,15 @@
-### To be continued...
+### Folytatása következik...
 
-Congratulations. You made it this far.
+Gratulálok, hogy ilyen messzire jutottál. Remélem, hogy lépésről lépésre követted ezt a kis útmutatót, és nem csak átugráltad a fejezeteket. :)
 
-I hope you were following the tutorial step by step and not just skipping over the chapters :)
+Ha úgy érzed, hasznodra vált, örülnék egy csillagnak. Ez ugyanis az egyetlen módja, hogy nyomon követhessem azt, hogy az emberek olvassák az irományomat :)
 
-If you got something out of the tutorial I would appreciate a star. It's the only way for me to see if people are actually reading this :)
+Az fenti útmutató kedvező fogadtatása arra inspirált, hogy könyv formában is közreadjam azt. A könyv a jelen útmutató javított, bővített és frissebb változata, amely az alábbi linkre kattintva megrendelhető (angol nyelven).
 
-Because this tutorial was so well-received, it inspired me to write a book. The book is a much more up to date version of this tutorial and covers a lot more. Click the link below to check it out (there is also a sample chapter available).
-
-### [Professional PHP: Building maintainable and secure applications](http://patricklouys.com/professional-php/)
+### [Professzionális PHP: karbantartható és biztonságos alkalmazások építése](http://patricklouys.com/professional-php/)
 
 ![](http://patricklouys.com/img/professional-php-thumb.png)
 
-Thanks for your time,
+Köszönöm, hogy időt szántál rá,
 
-Patrick
+[Patrick](https://github.com/PatrickLouys)
