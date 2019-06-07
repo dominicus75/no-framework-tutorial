@@ -1,6 +1,6 @@
 [következő fejezet >>](02-composer.md)
 
-### Front Controller
+### [Front Controller](https://hu.wikipedia.org/wiki/Front_vez%C3%A9rl%C5%91_tervez%C3%A9si_minta)
 
 Először hozzunk létre egy üres könyvtárat a projektünk gyökérkönyvtárában, mondjuk `public` néven. Tegyünk róla, hogy az Apache `DOCUMENT_ROOT` környezeti változója erre a könyvtárra mutasson, vagyis a web felől csak ezen könyvtár tartalma legyen látható. Ide kerül majd minden olyan dolog, amit a web felül elérhetővé szeretnénk tenni, így a képeket, a felhasználó által feltöltött állományokat, css és js fájlokat tartalmazó alkönyvtárak.
 
@@ -24,7 +24,7 @@ Szükség van ezen felül egy belépési pontra is, ahol az összes beérkező k
 </IfModule>
 ```
 
-Ezzel az `index.php` állományt sikeresen ki is neveztük alkalmazásunk [front controllerévé](https://hu.wikipedia.org/wiki/Front_vez%C3%A9rl%C5%91_tervez%C3%A9si_minta), amely egyetlen központosított belépési pontot biztosít a beérkező kérelmek kezeléséhez.
+Ezzel az `index.php` állományt sikeresen ki is neveztük alkalmazásunk egyetlen központosított belépési pontjának.
 
 Ha a fentiekkel elkészültünk, a projektünk könyvtárszerkezete valahogy így fog festeni:
 
@@ -41,7 +41,7 @@ myProject/
 └── vendor/
 ```
 
-Ne feledjük, hogy az `index.php` csak kiindulási pont (most már azt is tudjuk, hogy front controller a becsületes neve), ezért alkalmazásunk logikája nem itt fog lakni. Helyezzük el az állomány elején az alábbi kódot:
+Ne feledjük, hogy az `index.php` csak kiindulási pont, ezért alkalmazásunk logikája nem itt fog lakni (a tényleges Front Controller általában egy külön osztály szokott lenni). Helyezzük el az állomány elején az alábbi kódot:
 
 ```php
 <?php declare(strict_types = 1);
@@ -63,7 +63,7 @@ Most navigáljunk az `src` mappába és hozzuk létre a `Bootstrap.php` állomá
 echo 'Helló világ!';
 ```
 
-Most pedig ellenőrizzük, hogy mindent jól csináltunk-e. Nyissuk meg a konzolt/terminált és navigáljunk a `public` mappába (`# cd /path/to/myproject/public`). Itt adjuk ki a `php index.php` parancsot. Ezzel (anélkül, hogy webszervert indítanánk) átadjuk a PHP értelmezőnek `index.php` állományunkat, ami – ha mindent jól csináltunk – lefuttatja azt és kiírja a kimenetre (jelen esetben a terminálra), hogy 'Helló világ!'.
+Most pedig ellenőrizzük, hogy működik-e. Nyissuk meg a konzolt/terminált és navigáljunk a `public` mappába (`# cd /path/to/myproject/public`). Itt adjuk ki a `php index.php` parancsot. Ezzel (anélkül, hogy webszervert indítanánk) átadjuk a PHP értelmezőnek `index.php` állományunkat, ami – ha mindent jól csináltunk – lefuttatja azt és kiírja a kimenetre (jelen esetben a terminálra), hogy 'Helló világ!'.
 
 Ha nem azt a kimenetet kapjuk, amire számítottunk ('Helló világ!'), akkor térjünk vissza a megnyitott állományokhoz és keressük meg a hibát (esélyes, hogy elgépeltünk valamit). Ha csupán egy üres képernyő törekvéseink jutalma, ellenőrizzük, hogy telepítve van-e a gépünkre a PHP.
 
