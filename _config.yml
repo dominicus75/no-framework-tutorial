@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 - jekyll-feed
 - jekyll-redirect-from
 - jekyll-seo-tag
@@ -6,3 +7,6 @@
 - jemoji
 - jekyll-mentions
 - jekyll-include-cache
+=======
+theme: jekyll-theme-hacker
+>>>>>>> 31f984b34275794f09723defdd5905980f4bec4a
